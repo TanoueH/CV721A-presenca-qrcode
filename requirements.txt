@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+qrcode
+pillow
+gspread
+oauth2client
