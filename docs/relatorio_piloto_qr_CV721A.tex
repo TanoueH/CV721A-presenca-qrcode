@@ -1,1 +1,155 @@
+\documentclass[12pt,a4paper]{article}
+
+% ------------------------------------------------
+% PACOTES
+% ------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+
+% ------------------------------------------------
+% LAYOUT
+% ------------------------------------------------
+\geometry{
+  left=3cm,
+  right=2cm,
+  top=3cm,
+  bottom=2.5cm
+}
+
+\setstretch{1.5}
+
+% ------------------------------------------------
+\begin{document}
+
+\begin{center}
+    \Large\textbf{RELATÓRIO TÉCNICO}\\[0.3cm]
+    \large\textbf{Projeto-Piloto do Sistema de Presença com QR Code Dinâmico}\\[0.3cm]
+    \normalsize Faculdade de Engenharia Civil -- UNICAMP\\
+    Disciplina: \textbf{Fundações}
+\end{center}
+
+\vspace{1cm}
+
+% ------------------------------------------------
+
+\section*{1. Introdução}
+
+Este relatório apresenta os resultados do projeto-piloto de implementação de um sistema automatizado de controle de presença em sala de aula com utilização de QR Codes dinâmicos, aplicado à disciplina \textbf{Fundações}, envolvendo aproximadamente 100 estudantes.
+
+% ------------------------------------------------
+
+\section*{2. Objetivos}
+
+\begin{itemize}
+    \item Avaliar a viabilidade operacional do sistema;
+    \item Medir o impacto no tempo de chamada;
+    \item Verificar confiabilidade e segurança dos registros;
+    \item Analisar o grau de aceitação discente e docente.
+\end{itemize}
+
+% ------------------------------------------------
+
+\section*{3. Metodologia}
+
+\subsection*{3.1 Ambiente}
+
+O sistema foi hospedado em plataforma em nuvem (Render/AWS), com backend desenvolvido em Python (FastAPI) e banco de dados em planilha Google Sheets integrada via API.
+
+\subsection*{3.2 Procedimento}
+
+Em cada aula foi projetado um QR Code temporário válido por até 3 minutos, permitindo que os alunos realizassem o registro de presença via smartphone mediante inserção de RA e nome.
+
+\subsection*{3.3 Segurança}
+
+Foram aplicados:
+
+\begin{itemize}
+    \item Token exclusivo por aula;
+    \item Expiração automática;
+    \item Bloqueio de duplicidades por RA;
+    \item Registro de horário do check-in.
+\end{itemize}
+
+% ------------------------------------------------
+
+\section*{4. Resultados}
+
+\subsection*{4.1 Indicadores Quantitativos}
+
+Inserir tabela resumo:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Indicador} & \textbf{Chamada Manual} & \textbf{QR Code} \\
+\midrule
+Tempo médio (min) & --- & --- \\
+Taxa de registro (\%) & --- & --- \\
+Falhas reportadas (\%) & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{4.2 Indicadores Qualitativos}
+
+Relatar:
+
+\begin{itemize}
+    \item Percepção dos alunos;
+    \item Feedback dos docentes;
+    \item Facilidade operacional.
+\end{itemize}
+
+% ------------------------------------------------
+
+\section*{5. Discussão}
+
+Comparar o desempenho do método tradicional com o sistema digital, destacando ganhos operacionais, limitações observadas e eventuais ajustes necessários.
+
+% ------------------------------------------------
+
+\section*{6. Conformidade com LGPD}
+
+O sistema coletou apenas dados mínimos para fins de controle acadêmico, em conformidade com a legislação vigente, sem coleta de dados sensíveis.
+
+% ------------------------------------------------
+
+\section*{7. Conclusão}
+
+Avaliar a viabilidade de expansão do sistema para outras disciplinas da FEC ou integração futura aos sistemas institucionais.
+
+% ------------------------------------------------
+
+\section*{8. Encaminhamentos}
+
+Recomendações:
+
+\begin{itemize}
+    \item Ampliação do piloto;
+    \item Implementação de autenticação institucional;
+    \item Criação de painéis de acompanhamento.
+\end{itemize}
+
+% ------------------------------------------------
+
+\section*{9. Coordenação do Projeto}
+
+\begin{center}
+\textbf{Heloi Moacyr Tanoue}
+\end{center}
+
+% ------------------------------------------------
+
+\vfill
+\begin{center}
+    Novembro de 2025
+\end{center}
+
+\end{document}
 
