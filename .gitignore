@@ -1,0 +1,6 @@
+
+# Ambiente virtual
+.venv/
+
+# Credenciais Google
+credenciais.json
