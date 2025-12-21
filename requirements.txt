@@ -4,3 +4,4 @@ qrcode
 pillow
 gspread
 oauth2client
+echo "python-multipart" >> requirements.txt
