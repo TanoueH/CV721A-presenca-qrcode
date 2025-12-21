@@ -1,1 +1,195 @@
+\documentclass[12pt,a4paper]{article}
+
+% ------------------------------------------------
+% PACOTES
+% ------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+% ------------------------------------------------
+% CONFIGURACOES DE MARGEM E LAYOUT
+% ------------------------------------------------
+\geometry{
+  left=3cm,
+  right=2cm,
+  top=3cm,
+  bottom=2.5cm
+}
+
+\setstretch{1.5}
+
+% ------------------------------------------------
+\begin{document}
+
+\begin{center}
+    \Large\textbf{MANUAL DO PROFESSOR}\\[0.3cm]
+    \large\textbf{Sistema de Registro de Presença por QR Code Dinâmico}\\[0.3cm]
+    \normalsize Projeto-Piloto -- Faculdade de Engenharia Civil -- UNICAMP\\
+    Disciplina: \textbf{Fundações}
+\end{center}
+
+\vspace{1cm}
+
+% ------------------------------------------------
+
+\section*{1. Apresentação}
+
+Este manual descreve os procedimentos para utilização do sistema de registro automatizado de presença em sala de aula por meio de QR Code dinâmico, implantado como projeto-piloto institucional na disciplina \textbf{Fundações} da Faculdade de Engenharia Civil da UNICAMP.
+
+O sistema foi concebido para otimizar o controle acadêmico de frequência, aumentando a agilidade do processo de chamada, reduzindo erros de registro e assegurando confiabilidade dos dados, em conformidade com a Lei Geral de Proteção de Dados (LGPD).
+
+% ------------------------------------------------
+
+\section*{2. Objetivos do Sistema}
+
+O projeto visa:
+
+\begin{itemize}
+    \item Reduzir o tempo dedicado à chamada presencial;
+    \item Minimizar erros manuais de registro;
+    \item Aumentar a integridade dos dados de frequência;
+    \item Facilitar auditorias acadêmicas;
+    \item Gerar bases digitais para análise educacional.
+\end{itemize}
+
+% ------------------------------------------------
+
+\section*{3. Funcionamento Geral}
+
+O sistema utiliza QR Codes temporários, gerados exclusivamente para cada aula. O fluxo operacional é descrito abaixo:
+
+\begin{enumerate}
+    \item O professor gera o QR Code ao iniciar a aula;
+    \item O código é exibido em projetor ou tela;
+    \item O aluno escaneia o QR com o celular;
+    \item Informa RA e nome completo;
+    \item O sistema registra automaticamente a presença em planilha vinculada à disciplina.
+\end{enumerate}
+
+Cada QR Code possui validade máxima de 3 minutos e torna-se automaticamente inválido após o vencimento.
+
+% ------------------------------------------------
+
+\section*{4. Segurança do Sistema}
+
+As seguintes camadas de segurança estão ativas:
+
+\begin{itemize}
+    \item Geração de token único por aula;
+    \item Expiração temporizada (3 minutos);
+    \item Bloqueio de registros duplicados por RA;
+    \item Registro automático de data e hora.
+\end{itemize}
+
+Estas medidas impedem o uso indevido do sistema fora do contexto presencial da aula.
+
+% ------------------------------------------------
+
+\section*{5. Conformidade com a LGPD}
+
+São coletados exclusivamente:
+
+\begin{itemize}
+    \item Nome completo do aluno;
+    \item Número de RA;
+    \item Data e horário do registro.
+\end{itemize}
+
+O sistema não coleta dados biométricos, de localização ou imagens. A finalidade é restritamente acadêmica.
+
+% ------------------------------------------------
+
+\section*{6. Procedimento em Sala}
+
+\subsection*{6.1. Geração do QR Code}
+
+O professor acessa o endereço público do sistema e projeta o QR Code exibido.
+
+\subsection*{6.2. Orientação aos Alunos}
+
+Instruir os alunos a:
+
+\begin{itemize}
+    \item Escanear o QR Code com o celular;
+    \item Informar RA e nome completo;
+    \item Confirmar o envio.
+\end{itemize}
+
+\subsection*{6.3. Encerramento}
+
+Após o período de validade do QR Code, novos registros são automaticamente bloqueados.
+
+% ------------------------------------------------
+
+\section*{7. Acompanhamento}
+
+As presenças ficam disponíveis em planilha Google vinculada à disciplina:
+
+\begin{center}
+    Presenca\_FEC\_Fundacoes\_2025
+\end{center}
+
+Campos registrados:
+
+\begin{itemize}
+    \item Data
+    \item Disciplina
+    \item Turma
+    \item RA
+    \item Nome
+    \item Horário
+\end{itemize}
+
+% ------------------------------------------------
+
+\section*{8. Situações Especiais}
+
+\begin{itemize}
+    \item \textbf{Aluno sem celular:} registro manual posterior pelo professor.
+    \item \textbf{Aluno atrasado:} sujeito à decisão do docente quanto ao lançamento manual.
+    \item \textbf{Falhas técnicas:} utilizar lista manual e registrar posteriormente.
+\end{itemize}
+
+% ------------------------------------------------
+
+\section*{9. Suporte Técnico}
+
+Coordenação técnica do projeto:
+
+\begin{center}
+    \textbf{Heloi Moacyr Tanoue}
+\end{center}
+
+% ------------------------------------------------
+
+\section*{10. Avaliação do Piloto}
+
+Serão analisados:
+
+\begin{itemize}
+    \item Taxa de adesão dos alunos;
+    \item Redução no tempo de chamada;
+    \item Incidência de erros ou bloqueios;
+    \item Feedback docente.
+\end{itemize}
+
+% ------------------------------------------------
+
+\section*{11. Expansão}
+
+Em caso de validação positiva do piloto, recomenda-se a ampliação para outras disciplinas da FEC e integração futura aos sistemas institucionais.
+
+% ------------------------------------------------
+
+\vfill
+\begin{center}
+    Versão 1.0 -- Novembro de 2025
+\end{center}
+
+\end{document}
 
