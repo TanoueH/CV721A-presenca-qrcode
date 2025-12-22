@@ -5,3 +5,9 @@ pillow
 gspread
 oauth2client
 echo "python-multipart" >> requirements.txt
+fastapi
+uvicorn
+qrcode[pil]
+gspread
+oauth2client
+python-multipart
