@@ -4,3 +4,11 @@
 
 # Credenciais Google
 credenciais.json
+
+# VSCode
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+

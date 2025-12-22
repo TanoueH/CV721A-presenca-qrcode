@@ -22,37 +22,31 @@ TEMPO_QR_MIN = int(os.getenv("QR_TTL_MIN", "3"))
 
 SHEET_NAME = os.getenv("SHEET_NAME", "Presenca_FEC_Fundacoes_CV721A_2025")
 BASE_URL = os.getenv("BASE_URL", "").rstrip("/")
+WORKSHEET_TITLE = os.getenv("WORKSHEET_TITLE", "Checkins").strip()
 
 
 # =========================
 # GOOGLE SHEETS
 # =========================
 def get_worksheet():
+    creds_path = os.getenv("GOOGLE_CREDS_JSON", "credenciais.json")
+
     scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive",
     ]
 
-    # Preferência: credenciais via ENV (Render)
-    creds_json = os.getenv("GOOGLE_CREDS_JSON_CONTENT", "").strip()
-
-    if creds_json:
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(
-            json.loads(creds_json), scope
-        )
-    else:
-        # Fallback: arquivo local (dev)
-        creds_path = os.getenv("GOOGLE_CREDS_JSON", "credenciais.json")
-        creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
-
+    creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
     client = gspread.authorize(creds)
 
     spreadsheet_id = os.getenv("SPREADSHEET_ID", "").strip()
-    if spreadsheet_id:
-        return client.open_by_key(spreadsheet_id).sheet1
+    if not spreadsheet_id:
+        raise RuntimeError("SPREADSHEET_ID não configurado.")
 
-    return client.open(SHEET_NAME).sheet1
+    ss = client.open_by_key(spreadsheet_id)
 
+    title = os.getenv("WORKSHEET_TITLE", "Checkins").strip()
+    return ss.worksheet(title)
 
 
 # =========================
@@ -84,7 +78,6 @@ class AulaState:
 STATE = AulaState()
 app = FastAPI()
 
-
 # =========================
 # UTILIDADES
 # =========================
@@ -97,7 +90,6 @@ def make_qr_png_bytes(url: str) -> bytes:
     buf = io.BytesIO()
     img.save(buf, format="PNG")
     return buf.getvalue()
-
 
 def resolve_base_url(request: Request) -> str:
     """
@@ -192,16 +184,65 @@ def qr_png(request: Request):
 @app.get("/checkin/{token}", response_class=HTMLResponse)
 def checkin_form(token: str):
     if not STATE.valido(token):
-        return HTMLResponse("<h3>QR inválido ou expirado.</h3>", status_code=401)
+        return HTMLResponse(
+            "<h2 style='font-size:22px'>QR inválido ou expirado.</h2>",
+            status_code=401,
+        )
 
     return HTMLResponse("""
-        <h2>Registro de Presença</h2>
-        <form method="post">
-            <input name="ra" placeholder="RA" required><br><br>
-            <input name="nome" placeholder="Nome completo" required><br><br>
-            <button type="submit">Confirmar presença</button>
-        </form>
-    """)
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<style>
+:root { --fs: 22px; } /* tamanho base */
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: Arial, sans-serif;
+  padding: 16px;
+  margin: 0;
+  font-size: var(--fs);
+}
+h2 { font-size: 28px; margin: 0 0 12px; }
+label { font-size: 22px; display: block; margin-top: 14px; }
+
+input {
+  width: 100%;
+  font-size: 20px;          /* >= 16px evita zoom automático */
+  padding: 16px;
+  margin-top: 8px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  font-size: 24px;
+  padding: 18px;
+  margin-top: 18px;
+  background-color: #0b5ed7;
+  color: white;
+  border: none;
+  border-radius: 12px;
+}
+</style>
+</head>
+<body>
+  <h2>Registro de Presença</h2>
+
+  <form method="post">
+    <label>RA</label>
+    <input name="ra" inputmode="numeric" autocomplete="off" placeholder="Digite seu RA" required>
+
+    <label>Nome completo</label>
+    <input name="nome" autocomplete="name" placeholder="Digite seu nome" required>
+
+    <button type="submit">Confirmar Presença</button>
+  </form>
+</body>
+</html>
+""")
 
 
 @app.post("/checkin/{token}", response_class=HTMLResponse)
@@ -222,18 +263,23 @@ def checkin_submit(token: str, ra: str = Form(...), nome: str = Form(...)):
 
     # Cabeçalho: evita chamada remota (acell) a cada check-in
     if not STATE.header_ok:
-        if ws.acell("A1").value is None:
-            ws.update(
-                values=[["Data", "Disciplina", "Turma", "RA", "Nome", "Hora"]],
-                range_name="A1:F1",
-            )
-        STATE.header_ok = True
+      header = ["Data", "Disciplina", "Turma", "RA", "Nome", "Hora"]
+      first_row = ws.row_values(1)
 
+    if first_row[:6] != header:
+        ws.update("A1:F1", [header])
+
+    STATE.header_ok = True
+      
     ws.append_row([data, DISCIPLINA, TURMA, ra, nome, hora])
     STATE.presencas_hoje.add(ra)
 
-    return HTMLResponse("<h3>Presença registrada com sucesso!</h3>")
-
+    return HTMLResponse("""
+    <h2 style="font-size:26px; color:green;">
+    ✅ Presença registrada com sucesso!
+    </h2>
+    <p style="font-size:18px;">Você já pode fechar esta página.</p>
+    """)
 
 @app.get("/health")
 def health():
