@@ -29,25 +29,31 @@ WORKSHEET_TITLE = os.getenv("WORKSHEET_TITLE", "Checkins").strip()
 # GOOGLE SHEETS
 # =========================
 def get_worksheet():
-    creds_path = os.getenv("GOOGLE_CREDS_JSON", "credenciais.json")
-
     scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive",
     ]
 
-    creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
+    # 1) Credenciais via ENV (Render) — recomendado
+    creds_json_content = os.getenv("GOOGLE_CREDS_JSON_CONTENT", "").strip()
+    if creds_json_content:
+        info = json.loads(creds_json_content)
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(info, scope)
+    else:
+        # 2) Credenciais via arquivo (local)
+        creds_path = os.getenv("GOOGLE_CREDS_JSON", "credenciais.json")
+        creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
+
     client = gspread.authorize(creds)
 
     spreadsheet_id = os.getenv("SPREADSHEET_ID", "").strip()
     if not spreadsheet_id:
         raise RuntimeError("SPREADSHEET_ID não configurado.")
 
+    worksheet_title = os.getenv("WORKSHEET_TITLE", "Checkins").strip()
+
     ss = client.open_by_key(spreadsheet_id)
-
-    title = os.getenv("WORKSHEET_TITLE", "Checkins").strip()
-    return ss.worksheet(title)
-
+    return ss.worksheet(worksheet_title)
 
 # =========================
 # ESTADO DA AULA
