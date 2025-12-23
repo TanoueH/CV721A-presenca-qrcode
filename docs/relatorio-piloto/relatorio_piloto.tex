@@ -1,0 +1,138 @@
+\documentclass[12pt,a4paper]{article}
+
+% =========================
+% Pacotes essenciais
+% =========================
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{lmodern}
+\usepackage{setspace}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black
+}
+
+\setstretch{1.15}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Relatório do Piloto — CV721A}
+\rhead{\thepage}
+\cfoot{}
+
+% =========================
+% Metadados
+% =========================
+\newcommand{\Disciplina}{Fundações (CV721A)}
+\newcommand{\Curso}{Engenharia Civil — UNICAMP}
+\newcommand{\Periodo}{2025}
+\newcommand{\VersaoRelatorio}{v1.0}
+\newcommand{\DataRelatorio}{\today}
+
+\title{\textbf{Relatório do Projeto Piloto}\\
+Sistema de Apoio ao Trabalho Docente\\
+\Disciplina}
+\author{}
+\date{\DataRelatorio\ (\VersaoRelatorio)}
+
+\begin{document}
+\maketitle
+
+% =========================================================
+\section{Introdução}
+
+O presente relatório descreve o desenvolvimento e a aplicação de um \textbf{Sistema de Apoio ao Trabalho Docente}, testado como projeto piloto na disciplina \Disciplina{}, do curso de \Curso{}, no período letivo de \Periodo{}.
+
+O objetivo principal do projeto é reduzir a carga operacional associada ao controle de presença e à consolidação de notas, permitindo que o professor concentre esforços na condução pedagógica da disciplina.
+
+% =========================================================
+\section{Contextualização do Piloto}
+
+Em disciplinas com grande número de alunos, tarefas como registro manual de presença, consolidação de resultados de atividades interativas e lançamento de notas tornam-se processos repetitivos, suscetíveis a erros e consumidores de tempo.
+
+Ferramentas institucionais existentes, embora essenciais, nem sempre são otimizadas para o fluxo diário da aula presencial. Nesse contexto, propôs-se o desenvolvimento de uma ferramenta complementar, centrada no professor, que se integre de forma leve às práticas já consolidadas.
+
+% =========================================================
+\section{Descrição do Sistema Desenvolvido}
+
+O sistema desenvolvido consiste em uma aplicação web acessada via navegador, organizada em um painel único para o professor, com os seguintes módulos principais:
+
+\begin{itemize}[noitemsep]
+  \item Aula de Hoje;
+  \item Controle de Frequência;
+  \item Notas e Avaliações;
+  \item Importação de resultados do Kahoot;
+  \item Exportação de dados para o sistema institucional.
+\end{itemize}
+
+O controle de presença é realizado por meio de QR Code com validade temporária, permitindo o registro automático da presença dos alunos a partir de seus dispositivos móveis.
+
+As notas podem ser inseridas manualmente ou importadas a partir de arquivos CSV gerados por plataformas de atividades interativas, como o Kahoot.
+
+% =========================================================
+\section{Metodologia do Piloto}
+
+O projeto foi conduzido como um estudo piloto aplicado a uma turma real da disciplina \Disciplina{}.
+
+A metodologia adotada incluiu:
+\begin{itemize}[noitemsep]
+  \item desenvolvimento incremental do sistema;
+  \item validação funcional em ambiente real de sala de aula;
+  \item observação do uso pelo professor responsável;
+  \item coleta de percepções qualitativas sobre usabilidade e utilidade.
+\end{itemize}
+
+Não houve substituição de sistemas institucionais existentes, sendo o sistema utilizado de forma complementar.
+
+% =========================================================
+\section{Resultados Preliminares}
+
+Durante o período inicial de testes, observou-se:
+\begin{itemize}[noitemsep]
+  \item redução do tempo necessário para registro de presença;
+  \item eliminação de registros manuais em papel;
+  \item maior organização dos dados de frequência;
+  \item facilidade na incorporação de atividades interativas como instrumento avaliativo.
+\end{itemize}
+
+O uso do QR Code mostrou-se adequado ao contexto de sala de aula, com boa aceitação por parte dos alunos.
+
+% =========================================================
+\section{Discussão}
+
+Os resultados preliminares indicam que o sistema atende ao objetivo de apoiar o trabalho docente sem introduzir complexidade excessiva.
+
+A adoção de uma abordagem incremental permitiu ajustes rápidos conforme as necessidades observadas em sala, reforçando a importância de soluções flexíveis no contexto do ensino superior.
+
+A integração leve com ferramentas já utilizadas pelo professor mostrou-se um fator determinante para a aceitação do sistema.
+
+% =========================================================
+\section{Considerações Finais}
+
+O projeto piloto demonstrou a viabilidade de um sistema dedicado ao apoio ao trabalho docente, focado na automação de tarefas operacionais e na integração com práticas pedagógicas existentes.
+
+O sistema apresenta potencial para expansão e adaptação a outras disciplinas, respeitando as especificidades de cada contexto.
+
+% =========================================================
+\section{Trabalhos Futuros}
+
+Como trabalhos futuros, destacam-se:
+\begin{itemize}[noitemsep]
+  \item ampliação dos módulos de análise e visualização de dados;
+  \item integração mais direta com sistemas institucionais;
+  \item avaliação quantitativa do impacto pedagógico;
+  \item extensão do piloto para outras disciplinas.
+\end{itemize}
+
+\end{document}
