@@ -284,7 +284,7 @@ def checkin_submit(token: str, ra: str = Form(...), nome: str = Form(...)):
     <h2 style="font-size:26px; color:green;">
     ✅ Presença registrada com sucesso!
     </h2>
-    <p style="font-size:18px;">Você já pode fechar esta página.</p>
+    <p style="font-size:28px;">Você já pode fechar esta página.</p>
     """)
 
 @app.get("/health")
