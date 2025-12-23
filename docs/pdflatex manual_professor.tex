@@ -1,0 +1,173 @@
+\documentclass[12pt,a4paper]{article}
+
+% =========================
+% Pacotes essenciais
+% =========================
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{lmodern}
+\usepackage{setspace}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black
+}
+
+\setstretch{1.15}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Manual do Professor — CV721A}
+\rhead{\thepage}
+\cfoot{}
+
+% =========================
+% Metadados do documento
+% =========================
+\newcommand{\Disciplina}{Fundações (CV721A)}
+\newcommand{\Curso}{Engenharia Civil — UNICAMP}
+\newcommand{\VersaoManual}{v1.0}
+\newcommand{\DataManual}{\today}
+
+\title{\textbf{Manual do Professor}\\
+Sistema de Apoio ao Trabalho Docente\\
+\Disciplina}
+\author{}
+\date{\DataManual\ (\VersaoManual)}
+
+\begin{document}
+\maketitle
+
+\section{Apresentação}
+Este manual orienta o uso do \textbf{Sistema de Apoio ao Trabalho Docente}, desenvolvido para auxiliar o professor no gerenciamento de:
+\begin{itemize}[noitemsep]
+  \item presença diária dos alunos;
+  \item consolidação de notas (provas, trabalhos e atividades interativas);
+  \item exportação de dados acadêmicos para uso no sistema institucional da UNICAMP.
+\end{itemize}
+
+O sistema foi projetado para \textbf{reduzir tarefas operacionais}, mantendo o foco do professor na condução da aula.
+
+\textbf{Observação:} o sistema \textbf{não substitui} o Google Classroom nem sistemas institucionais da UNICAMP. Ele atua como uma \textbf{ferramenta complementar}, dedicada ao trabalho docente em sala.
+
+\section{Visão Geral do Sistema}
+O sistema é acessado via navegador (computador ou tablet do professor) e organiza as principais tarefas docentes em um \textbf{painel único}, composto pelos seguintes módulos:
+\begin{itemize}[noitemsep]
+  \item Aula de Hoje;
+  \item Frequência;
+  \item Notas \& Avaliações;
+  \item Importar Kahoot;
+  \item Exportar UNICAMP.
+\end{itemize}
+
+\section{Requisitos para Uso}
+\subsection*{Para o professor}
+\begin{itemize}[noitemsep]
+  \item notebook ou computador com acesso à internet;
+  \item navegador web atualizado (Chrome, Firefox, Edge ou Safari);
+  \item projetor ou tela para exibir o QR Code.
+\end{itemize}
+
+\subsection*{Para os alunos}
+\begin{itemize}[noitemsep]
+  \item smartphone com câmera;
+  \item acesso à internet (Wi-Fi ou dados móveis).
+\end{itemize}
+
+\section{Módulo ``Aula de Hoje''}
+Este é o \textbf{módulo principal} do sistema, utilizado em todas as aulas.
+
+\subsection{Material da Aula (opcional)}
+O professor pode, se desejar:
+\begin{itemize}[noitemsep]
+  \item inserir um \textbf{link para o material da aula} (Google Drive, OneDrive etc.);
+  \item ou fazer upload de um arquivo (\texttt{.pptx} ou \texttt{.pdf}).
+\end{itemize}
+O botão \textbf{``Abrir aula''} abre o material em nova aba, funcionando como atalho organizado para o PowerPoint. Este recurso é opcional e não interfere no controle de presença.
+
+\subsection{Gerar Presença por QR Code}
+\begin{enumerate}[label=\arabic*)]
+  \item No início da aula, clique em \textbf{``Gerar QR de Presença''}.
+  \item Um QR Code será exibido na tela.
+  \item Projete o QR Code para os alunos.
+  \item O QR Code possui validade temporária (ex.: 3--5 minutos).
+\end{enumerate}
+Durante o período de validade, os alunos acessam o QR, informam \textbf{RA} e \textbf{Nome}, e a presença é registrada automaticamente.
+
+\subsection{Acompanhamento em tempo real}
+Enquanto o QR estiver ativo, o professor pode acompanhar:
+\begin{itemize}[noitemsep]
+  \item número de alunos presentes;
+  \item lista de presenças registradas (RA, Nome e Horário).
+\end{itemize}
+Esse acompanhamento é opcional e não interfere no andamento da aula.
+
+\subsection{Encerrar Aula}
+Ao final do período de presença:
+\begin{enumerate}[label=\arabic*)]
+  \item Clique em \textbf{``Encerrar Aula''}.
+  \item O QR Code é invalidado.
+  \item Nenhum novo check-in é aceito.
+\end{enumerate}
+Isso evita registros fora do horário da aula.
+
+\section{Módulo ``Frequência''}
+Este módulo permite acompanhar a frequência ao longo do semestre, incluindo:
+\begin{itemize}[noitemsep]
+  \item presença por aluno;
+  \item presença por data/aula;
+  \item cálculo de faltas;
+  \item correções pontuais (exceções) quando necessário.
+\end{itemize}
+
+\section{Módulo ``Notas \& Avaliações''}
+Este módulo centraliza todas as notas da disciplina.
+
+\subsection{Criar avaliações}
+O professor pode criar avaliações do tipo: Prova, Trabalho, Kahoot e outras atividades. Para cada avaliação, define-se: nome, tipo e peso.
+
+\subsection{Inserção de notas}
+As notas podem ser inseridas manualmente ou importadas (ver módulo Kahoot). As médias parciais podem ser calculadas automaticamente conforme a configuração adotada.
+
+\section{Módulo ``Importar Kahoot''}
+Este módulo simplifica o uso de atividades interativas como nota.
+\begin{enumerate}[label=\arabic*)]
+  \item Aplicar a atividade no Kahoot.
+  \item Exportar o resultado em formato \textbf{CSV}.
+  \item Acessar o módulo \textbf{Importar Kahoot}.
+  \item Fazer upload do arquivo CSV.
+  \item Associar o arquivo a uma avaliação existente ou criar uma nova.
+  \item Conferir a pré-visualização dos dados.
+  \item Confirmar a importação.
+\end{enumerate}
+O sistema cruza dados preferencialmente por \textbf{RA} e registra as notas automaticamente. Caso algum aluno não seja reconhecido, o sistema sinaliza e permite associação manual.
+
+\section{Módulo ``Exportar UNICAMP''}
+Ao final do semestre, o professor pode exportar \textbf{frequência} e \textbf{notas} em \textbf{CSV} para facilitar a transferência ao sistema institucional da UNICAMP, reduzindo tempo e erros manuais.
+
+\section{Boas Práticas de Uso}
+\begin{itemize}[noitemsep]
+  \item Gerar o QR Code sempre no início da aula.
+  \item Utilizar tempo curto de validade para evitar registros indevidos.
+  \item Encerrar a aula após o período de check-in.
+  \item Importar resultados do Kahoot logo após a atividade.
+  \item Padronizar RA como identificador principal.
+\end{itemize}
+
+\section{Considerações Finais}
+O sistema foi desenvolvido com foco em simplicidade, confiabilidade e integração com práticas já consolidadas. Sua evolução deve ser guiada pelas necessidades reais do professor, podendo incorporar novas funcionalidades ao longo do semestre.
+
+\section*{Contato e Suporte}
+Em caso de dúvidas, sugestões ou problemas, registrar a ocorrência e encaminhar para a equipe responsável pelo projeto piloto.
+
+\end{document}
