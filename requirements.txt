@@ -4,3 +4,5 @@ qrcode[pil]
 gspread
 oauth2client
 python-multipart
+jinja2>=3.1.0
+pydantic>=1.8.2
