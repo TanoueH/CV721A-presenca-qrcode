@@ -2,16 +2,31 @@ import json
 import io
 import os
 import secrets
+import qrcode
+import gspread
+
 from datetime import datetime, timedelta
 from typing import Optional, Set
-
-import qrcode
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, Response
-
-import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
+from app.routes.aula import router as aula_router
+from app.routes.frequencia import router as frequencia_router
+from app.routes.notas import router as notas_router
+from app.routes.kahoot import router as kahoot_router
+
+app = FastAPI()
+app.state.templates = Jinja2Templates(directory="app/templates")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+app.include_router(aula_router)
+app.include_router(frequencia_router)
+app.include_router(notas_router)
+app.include_router(kahoot_router)
 
 # =========================
 # CONFIGURAÇÕES
@@ -83,6 +98,12 @@ class AulaState:
 
 STATE = AulaState()
 app = FastAPI()
+
+# Templates HTML
+templates = Jinja2Templates(directory="app/templates")
+
+# Arquivos estáticos (CSS, JS, imagens)
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # =========================
 # UTILIDADES
@@ -283,8 +304,7 @@ def checkin_submit(token: str, ra: str = Form(...), nome: str = Form(...)):
     return HTMLResponse("""
     <h2 style="font-size:26px; color:green;">
     ✅ Presença registrada com sucesso!
-    </h2>
-    <p style="font-size:28px;">Você já pode fechar esta página.</p>
+    </h2>    <p style="font-size:28px;">Você já pode fechar esta página.</p>
     """)
 
 @app.get("/health")

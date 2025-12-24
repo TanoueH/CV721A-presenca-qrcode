@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Frequência – CV721A</h1>
+
+<p>
+  <strong>Total de aulas registradas:</strong> {{ total_aulas }} <br>
+  <strong>Total de alunos com registro:</strong> {{ total_alunos }}
+</p>
+
+<p>
+  <a href="/">← Voltar para Aula de Hoje</a>
+</p>
+
+{% if total_aulas == 0 %}
+  <hr>
+  <p>Nenhuma presença registrada ainda.</p>
+{% else %}
+  <hr>
+  <table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th>RA</th>
+        <th>Nome</th>
+        <th>Presenças</th>
+        <th>Faltas</th>
+        <th>% Presença</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in alunos %}
+        <tr>
+          <td>{{ a.ra }}</td>
+          <td>{{ a.nome }}</td>
+          <td>{{ a.presencas }}</td>
+          <td>{{ a.faltas }}</td>
+          <td>{{ "%.1f"|format(a.percentual) }}%</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="projecao">
+  <div class="topbar">
+    <div>
+      <div class="title">{{ disciplina }}</div>
+      <div class="subtitle">{{ turma }}</div>
+    </div>
+    <div class="stats">
+      <div><strong>Presentes:</strong> <span id="presentes">{{ qtd_presentes }}</span></div>
+      <div><strong>Expira em:</strong> <span id="expira">--:--:--</span></div>
+      <div><strong>Tempo:</strong> <span id="restante">--:--</span></div>
+    </div>
+  </div>
+
+  <div style="margin-top:10px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+    <button class="btn primary" id="btn-renovar" type="button">Renovar QR</button>
+    <a class="btn" href="/" target="_blank">Painel</a>
+  </div>
+</div>
+
+  <div class="qrwrap">
+    <img id="qr" src="/qr.png" alt="QR Code">
+  </div>
+
+  <div class="footer">
+    <span>Aluno: aponte a câmera e preencha RA + Nome.</span>
+  </div>
+</div>
+
+<script>
+async function tick(){
+  try{
+    const r = await fetch("/status");
+    const s = await r.json();
+
+    document.getElementById("presentes").textContent = s.qtd_presentes ?? 0;
+
+    if (!s.expira_em) return;
+
+    const exp = new Date(s.expira_em);
+    const now = new Date();
+    const diffMs = exp - now;
+
+    // expira
+    const hh = String(exp.getHours()).padStart(2,'0');
+    const mm = String(exp.getMinutes()).padStart(2,'0');
+    const ss = String(exp.getSeconds()).padStart(2,'0');
+    document.getElementById("expira").textContent = `${hh}:${mm}:${ss}`;
+
+    // restante
+    const totalSec = Math.max(0, Math.floor(diffMs/1000));
+    const m = String(Math.floor(totalSec/60)).padStart(2,'0');
+    const s2 = String(totalSec%60).padStart(2,'0');
+    document.getElementById("restante").textContent = `${m}:${s2}`;
+
+    // se expirou, força refresh do QR (caso professor gere novo)
+    if (totalSec === 0){
+      document.getElementById("restante").textContent = "00:00";
+    }
+  } catch(e) {}
+}
+
+setInterval(tick, 1000);
+tick();
+</script>
+
+<script>
+let qrVersion = Date.now();
+
+function refreshQR(){
+  qrVersion = Date.now();
+  const img = document.getElementById("qr");
+  img.src = "/qr.png?v=" + qrVersion; // evita cache
+}
+
+document.getElementById("btn-renovar").addEventListener("click", async () => {
+  try{
+    const btn = document.getElementById("btn-renovar");
+    btn.disabled = true;
+    btn.textContent = "Renovando...";
+
+    const r = await fetch("/aula/renovar", { method: "POST" });
+    const j = await r.json();
+
+    refreshQR(); // QR novo
+    await tick(); // atualiza timer/status
+
+    btn.textContent = "Renovar QR";
+    btn.disabled = false;
+  } catch(e){
+    const btn = document.getElementById("btn-renovar");
+    btn.textContent = "Erro — tente de novo";
+    btn.disabled = false;
+  }
+});
+</script>
+
+{% endblock %}

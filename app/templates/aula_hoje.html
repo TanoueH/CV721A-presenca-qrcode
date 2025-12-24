@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Presença por QR – {{ disciplina }}</h1>
+<p><strong>Turma:</strong> {{ turma }}</p>
+
+<div class="card">
+  <h2>Aula de Hoje</h2>
+  <ol>
+    <li>Clique em <strong>Iniciar aula</strong>.</li>
+    <li>Abra a tela de <strong>Projeção</strong> (QR + timer).</li>
+    <li>Encerrar ao final.</li>
+  </ol>
+
+  <form action="/aula/iniciar" method="post">
+    <button class="btn primary" type="submit">Iniciar aula (Gerar QR)</button>
+  </form>
+
+  {% if token %}
+    <p class="muted">
+      <strong>Status:</strong>
+      {% if ativa %} QR ativo {% else %} Expirado {% endif %}
+      — <strong>Presentes:</strong> {{ qtd_presentes }}
+    </p>
+
+    <div class="row">
+      <a class="btn" href="/projecao" target="_blank">Abrir Projeção (tela cheia)</a>
+      <a class="btn" href="/qr.png" target="_blank">Abrir QR (imagem)</a>
+    </div>
+
+    <form action="/aula/encerrar" method="post">
+      <button class="btn danger" type="submit">Encerrar aula</button>
+    </form>
+  {% endif %}
+</div>
+
+<div class="row">
+  <a class="btn" href="/frequencia">Frequência</a>
+  <a class="btn" href="/notas">Notas</a>
+  <a class="btn" href="/kahoot">Importar Kahoot</a>
+</div>
+
+{% endblock %}
