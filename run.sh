@@ -38,7 +38,13 @@ echo "  - http://localhost:$PORT/health"
 echo
 echo "IMPORTANTE para o QR funcionar no celular:"
 echo "  - Abra o sistema pelo IP do Windows (ou pelo IP correto da rede), NÃO por localhost."
-echo
+echo "=============================================="
+echo "⚠️  ATENÇÃO (IMPORTANTE)"
+echo "Use o IP do WINDOWS (Wi-Fi), NÃO o IP do WSL"
+echo "Exemplo correto para o celular:"
+echo "  http://192.168.15.43:$PORT"
+echo "=============================================="
+
 
 # 5) Subir o servidor
 exec uvicorn app.main:app --host 0.0.0.0 --port "$PORT" --reload
