@@ -12,7 +12,7 @@
     <li>Encerrar ao final.</li>
   </ol>
 
-  <form action="/aula/iniciar" method="post">
+  <form action="/prof/aula/iniciar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
     <button class="btn primary" type="submit">Iniciar aula (Gerar QR)</button>
   </form>
 
