@@ -10,11 +10,10 @@ from oauth2client.service_account import ServiceAccountCredentials
 from gspread.exceptions import WorksheetNotFound, APIError
 
 DISCIPLINA = "Fundações (CV721A)"
-TURMA = "Engenharia Civil – 2025"
+TURMA = "Engenharia Civil (FEC) – 2026"
 
 CHECKINS_TAB = os.getenv("CHECKINS_TAB", "Checkins")
 AULAS_TAB = os.getenv("AULAS_TAB", "Aulas")
-
 
 # -------------------------
 # LOGGING
@@ -119,7 +118,6 @@ def ensure_aulas_header(ws: gspread.Worksheet) -> None:
         logger.exception("Falha ao garantir cabeçalho da aba Aulas.")
         raise SheetsRuntimeError("Não foi possível preparar cabeçalho da aba Aulas.") from e
 
-
 def upsert_aula_hoje(
     data: str,
     disciplina: str,
@@ -172,7 +170,8 @@ def load_aula_hoje(data: str, tab_name: str = AULAS_TAB) -> Dict[str, str]:
 # -------------------------
 def ensure_checkins_header(ws: gspread.Worksheet) -> None:
     try:
-        if ws.acell("A1").value is None:
+        first_row = ws.row_values(1)
+        if not first_row or first_row[0] != "Data":
             ws.update("A1:F1", [["Data", "Disciplina", "Turma", "RA", "Nome", "Hora"]])
     except Exception as e:
         logger.exception("Falha ao garantir cabeçalho da aba Checkins.")
@@ -180,25 +179,28 @@ def ensure_checkins_header(ws: gspread.Worksheet) -> None:
 
 
 def registrar_presenca(ra: str, nome: str, tab_name: str = CHECKINS_TAB) -> None:
+    ra = (ra or "").strip()
+    nome = (nome or "").strip()
+    if not ra or not nome:
+        raise ValueError("RA/Nome vazios")
+    _append_presenca_row(ra, nome, tab_name=tab_name)
+
+def _append_presenca_row(ra: str, nome: str, tab_name: str = CHECKINS_TAB) -> None:
     ws = get_worksheet(tab_name)
     ensure_checkins_header(ws)
 
+    hoje = datetime.now().strftime("%Y-%m-%d")
+    hora = datetime.now().strftime("%H:%M:%S")
+
     try:
-        ws.append_row([
-            datetime.now().strftime("%Y-%m-%d"),
-            DISCIPLINA,
-            TURMA,
-            ra.strip(),
-            nome.strip(),
-            datetime.now().strftime("%H:%M:%S"),
-        ])
-        logger.info("Presença registrada: RA=%s", ra.strip())
+        ws.append_row([hoje, DISCIPLINA, TURMA, ra, nome, hora], value_input_option="USER_ENTERED")
+        logger.info("Check-in registrado (RA=%s).", ra)
     except APIError as e:
-        logger.exception("APIError ao registrar presença.")
-        raise SheetsRuntimeError("Erro de API ao registrar presença no Sheets.") from e
+        logger.exception("APIError ao registrar check-in.")
+        raise SheetsRuntimeError("Erro de API ao registrar check-in.") from e
     except Exception as e:
-        logger.exception("Erro inesperado ao registrar presença.")
-        raise SheetsRuntimeError("Erro inesperado ao registrar presença no Sheets.") from e
+        logger.exception("Erro inesperado ao registrar check-in.")
+        raise SheetsRuntimeError("Erro inesperado ao registrar check-in.") from e
 
 
 def calcular_frequencia(tab_name: str = CHECKINS_TAB) -> Tuple[int, List[Dict[str, Any]]]:
