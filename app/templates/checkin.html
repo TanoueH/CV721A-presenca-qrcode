@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Registro de Presença</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main>
+    <div class="card">
+      <h1>Registro de Presença</h1>
+      <p class="muted">Preencha os dados abaixo para confirmar sua presença.</p>
+      {% if aviso %}
+    <div class="notice" style="border:1px solid #b00; margin-top:12px;">
+      {{ aviso | safe }}
+    </div>
+      {% endif %}
+      <form method="post" action="{{ request.url.path }}" class="row"
+               style="flex-direction:column; gap:12px; margin-top:14px;">
+        <input name="ra" placeholder="RA" required inputmode="numeric" autocomplete="off"
+               style="font-size:16px; padding:12px; width:100%; max-width:420px;">
+        <input name="nome" placeholder="Nome completo" required autocomplete="name"
+               style="font-size:16px; padding:12px; width:100%; max-width:420px;">
+        <button type="submit" class="btn primary" style="max-width:420px;">Confirmar presença</button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>
