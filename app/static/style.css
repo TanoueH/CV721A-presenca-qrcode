@@ -122,7 +122,7 @@ button.btn{ cursor:pointer; }
 }
 
 /* Mobile: deixa tudo grande (para aluno) */
-@media (max-width: 520px){
+@media (max-width: 900px){
   main{ padding: 12px; }
   h1{ font-size: 22px; }
   .btn{ width: 100%; text-align:center; }
@@ -132,7 +132,7 @@ button.btn{ cursor:pointer; }
   .notice *{
     font-size: 22px !important;
     line-height: 1.35;
-    font-weight: 800;
+    font-weight: 900;
   }
 
   .notice{
