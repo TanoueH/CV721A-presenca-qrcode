@@ -20,15 +20,24 @@
     <p class="muted">
       <strong>Status:</strong>
       {% if ativa %} QR ativo {% else %} Expirado {% endif %}
-      — <strong>Presentes:</strong> {{ qtd_presentes }}
+      — <strong>Presentes:</strong> <span id="qtd_presentes">{{ qtd_presentes }}</span>
+      <span id="msg" style="margin-left:10px;"></span>
     </p>
 
     <div class="row">
-      <a class="btn" href="/projecao" target="_blank">Abrir Projeção (tela cheia)</a>
-      <a class="btn" href="/qr.png" target="_blank">Abrir QR (imagem)</a>
+      <a class="btn" id="lnk_proj" href="/prof/projecao{% if prof_k %}?k={{ prof_k }}{% endif %}" target="_blank">
+        Abrir Projeção (tela cheia)
+      </a>
+      <a class="btn" id="lnk_qr" href="/prof/qr.png{% if prof_k %}?k={{ prof_k }}{% endif %}" target="_blank">
+        Abrir QR (imagem)
+      </a>
     </div>
 
-    <form action="/aula/encerrar" method="post">
+    <div class="row">
+      <button class="btn" type="button" id="btn_renovar">Renovar QR</button>
+    </div>
+
+    <form action="/prof/aula/encerrar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
       <button class="btn danger" type="submit">Encerrar aula</button>
     </form>
   {% endif %}
@@ -39,5 +48,79 @@
   <a class="btn" href="/notas">Notas</a>
   <a class="btn" href="/kahoot">Importar Kahoot</a>
 </div>
+
+{% if token %}
+<script>
+(function () {
+  const profK = "{{ prof_k }}".trim();
+  const btnRenovar = document.getElementById("btn_renovar");
+  const qtdSpan = document.getElementById("qtd_presentes");
+  const msgEl = document.getElementById("msg");
+  const lnkQr = document.getElementById("lnk_qr");
+
+  function withKey(url){
+    if (!profK) return url;
+    return url + (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(profK);
+  }
+
+  function setMsg(text){
+    if (!msgEl) return;
+    msgEl.textContent = text || "";
+  }
+
+  async function renovar() {
+    btnRenovar.disabled = true;
+    btnRenovar.textContent = "Renovando...";
+    try {
+      const res = await fetch(withKey("/prof/aula/renovar"), { method: "POST" });
+      if (res.status === 401 || res.status === 403){
+        setMsg("Acesso restrito (chave inválida).");
+        throw new Error("Acesso restrito");
+      }
+      if (!res.ok) throw new Error("Falha ao renovar");
+      await res.json();
+
+      // Atualiza o link do QR com cache-buster (para aba aberta não mostrar cache)
+      const v = Date.now();
+      if (lnkQr){
+        const base = withKey("/prof/qr.png");
+        lnkQr.href = base + (base.includes("?") ? "&" : "?") + "v=" + v;
+      }
+
+      btnRenovar.textContent = "QR renovado";
+      setTimeout(() => (btnRenovar.textContent = "Renovar QR"), 1500);
+      setMsg("");
+    } catch (e) {
+      btnRenovar.textContent = "Erro ao renovar";
+      setTimeout(() => (btnRenovar.textContent = "Renovar QR"), 2000);
+    } finally {
+      btnRenovar.disabled = false;
+    }
+  }
+
+  async function pollStatus() {
+    try {
+      const res = await fetch(withKey("/prof/status"));
+      if (res.status === 401 || res.status === 403){
+        setMsg("Acesso restrito (chave inválida).");
+        return;
+      }
+      if (!res.ok) return;
+
+      const data = await res.json();
+      if (qtdSpan && typeof data.qtd_presentes === "number") {
+        qtdSpan.textContent = String(data.qtd_presentes);
+      }
+      setMsg("");
+    } catch (_) {}
+  }
+
+  if (btnRenovar) btnRenovar.addEventListener("click", renovar);
+
+  pollStatus();               // primeira atualização imediata
+  setInterval(pollStatus, 2000);
+})();
+</script>
+{% endif %}
 
 {% endblock %}
