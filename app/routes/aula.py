@@ -43,9 +43,7 @@ class AulaState:
     def ativa(self) -> bool:
         return bool(self.token and self.expira_em and datetime.now() <= self.expira_em)
 
-
 STATE = AulaState()
-
 
 def _check_prof_key(request: Request) -> None:
     """
@@ -58,7 +56,6 @@ def _check_prof_key(request: Request) -> None:
     if k != PROF_TOKEN:
         # Mantive simples; se preferir, trocamos por uma página HTML.
         raise HTTPException(status_code=403, detail="Acesso restrito (chave inválida).")
-
 
 def base_url(request: Request) -> str:
     """
@@ -73,7 +70,6 @@ def base_url(request: Request) -> str:
     scheme = request.headers.get("x-forwarded-proto", url.scheme)
     host = request.headers.get("x-forwarded-host", request.headers.get("host", url.netloc))
     return f"{scheme}://{host}".rstrip("/")
-
 
 # =========================
 # PROFESSOR (/prof)
@@ -96,14 +92,12 @@ def painel_professor(request: Request):
         },
     )
 
-
 @router.post("/aula/iniciar")
 def iniciar_aula(request: Request):
     _check_prof_key(request)
     STATE.iniciar()
     k = request.query_params.get("k", "")
     return RedirectResponse(url=f"/prof/projecao?k={k}", status_code=303)
-
 
 @router.post("/aula/encerrar")
 def encerrar_aula(request: Request):
@@ -206,8 +200,11 @@ def checkin_form(request: Request, token: str):
         },
     )
 
+import logging
+logger = logging.getLogger("uvicorn.error")
+
 @public_router.post("/checkin/{token}", response_class=HTMLResponse)
-def checkin_submit(token: str, ra: str = Form(...), nome: str = Form(...)):
+def checkin_submit(request: Request, token: str, ra: str = Form(...), nome: str = Form(...)):
     if not STATE.ativa() or token != STATE.token:
         return HTMLResponse("QR inválido ou expirado.", status_code=401)
 
@@ -217,7 +214,15 @@ def checkin_submit(token: str, ra: str = Form(...), nome: str = Form(...)):
     if ra in STATE.presentes:
         return HTMLResponse("<h3>Presença já registrada.</h3>")
 
-    registrar_presenca(ra, nome)
-    STATE.presentes.add(ra)
+    try:
+        registrar_presenca(ra, nome)
+    except Exception:
+        logger.exception("Falha ao registrar presença no Sheets")
+        return HTMLResponse(
+            "<h3>Não foi possível registrar agora.</h3>"
+            "<p>Avise o professor e tente novamente.</p>",
+            status_code=502,
+        )
 
+    STATE.presentes.add(ra)
     return HTMLResponse("<h3>Presença registrada com sucesso!</h3>")
