@@ -226,3 +226,6 @@ def checkin_submit(request: Request, token: str, ra: str = Form(...), nome: str 
 
     STATE.presentes.add(ra)
     return HTMLResponse("<h3>Presença registrada com sucesso!</h3>")
+
+    return {"build": "v-2025-12-26-01",
+    }
