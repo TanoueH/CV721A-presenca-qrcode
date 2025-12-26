@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Registro de Presença</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=2">
 </head>
 <body>
   <main>
     <div class="card">
       <h1>Registro de Presença</h1>
       <p class="muted">Preencha os dados abaixo para confirmar sua presença.</p>
-      {% if aviso %}
-    <div class="notice" style="border:1px solid #b00; margin-top:12px;">
-      {{ aviso | safe }}
+      {% if aviso %} 
+        <div class="notice msg-inline" aria-live="polite">
+          {{ aviso | safe }}
     </div>
       {% endif %}
       <form method="post" action="{{ request.url.path }}" class="row"

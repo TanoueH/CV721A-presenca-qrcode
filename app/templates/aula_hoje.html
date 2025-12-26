@@ -21,7 +21,7 @@
       <strong>Status:</strong>
       {% if ativa %} QR ativo {% else %} Expirado {% endif %}
       — <strong>Presentes:</strong> <span id="qtd_presentes">{{ qtd_presentes }}</span>
-      <span id="msg" style="margin-left:10px;"></span>
+      <span id="msg" class="msg-inline" aria-live="polite"></span>
     </p>
 
     <div class="row">
@@ -63,10 +63,18 @@
     return url + (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(profK);
   }
 
-  function setMsg(text){
-    if (!msgEl) return;
-    msgEl.textContent = text || "";
-  }
+  function setMsg(text, kind){
+  if (!msgEl) return;
+
+  msgEl.textContent = text || "";
+
+  // limpa classes anteriores
+  msgEl.classList.remove("success", "error", "warn");
+
+  // aplica tipo (success/error/warn)
+  if (kind) msgEl.classList.add(kind);
+}
+
 
   async function renovar() {
     btnRenovar.disabled = true;
@@ -74,7 +82,7 @@
     try {
       const res = await fetch(withKey("/prof/aula/renovar"), { method: "POST" });
       if (res.status === 401 || res.status === 403){
-        setMsg("Acesso restrito (chave inválida).");
+        setMsg("Acesso restrito (chave inválida).", "error");
         throw new Error("Acesso restrito");
       }
       if (!res.ok) throw new Error("Falha ao renovar");
@@ -89,7 +97,7 @@
 
       btnRenovar.textContent = "QR renovado";
       setTimeout(() => (btnRenovar.textContent = "Renovar QR"), 1500);
-      setMsg("");
+      setMsg("", null);
     } catch (e) {
       btnRenovar.textContent = "Erro ao renovar";
       setTimeout(() => (btnRenovar.textContent = "Renovar QR"), 2000);

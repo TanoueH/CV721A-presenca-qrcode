@@ -107,9 +107,54 @@ button.btn{ cursor:pointer; }
   text-align:center;
 }
 
+/* Mensagem inline (desktop) */
+.msg-inline{
+  margin-left: 10px;
+  font-weight: 700;
+  min-height: 1.2em;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+/* Avisos no check-in do aluno */
+.notice{
+  border: 1px solid rgba(0,0,0,.12);
+  margin-top: 12px;
+}
+
 /* Mobile: deixa tudo grande (para aluno) */
 @media (max-width: 520px){
   main{ padding: 12px; }
   h1{ font-size: 22px; }
   .btn{ width: 100%; text-align:center; }
+
+  /* força tamanho da mensagem do check-in (mesmo se vier com <small>, <p>, etc.) */
+  .notice,
+  .notice *{
+    font-size: 22px !important;
+    line-height: 1.35;
+    font-weight: 800;
+  }
+
+  .notice{
+  background: #e6f4ea;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-align: center;
+  margin-top: 12px;
+ }
+
+  .msg-inline{
+    display: block;
+    margin: 10px 0 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 22px;
+  }
+
+  .msg-inline.success{ background: #e6f4ea; }
+  .msg-inline.error{ background: #fdecea; }
+  .msg-inline.warn{ background: #fff4ce; }
 }
+
