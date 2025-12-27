@@ -13,15 +13,19 @@
     <li>Encerrar ao final.</li>
   </ol>
 
-  <div class="row">
-    <form action="/prof/aula/iniciar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
-      <button class="btn primary" type="submit">Iniciar aula</button>
-    </form>
+<div class="row">
+  <a class="btn primary" href="/prof/aulas{% if prof_k %}?k={{ prof_k }}{% endif %}">
+    Iniciar aula (abrir apresentações)
+  </a>
 
-    <form action="/prof/aula/gerar_qr{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
-      <button class="btn success" type="submit">Gerar QR de Presença (final da aula)</button>
-    </form>
-  </div>
+  <form action="/prof/aula/gerar_qr{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
+    <button class="btn success" type="submit">
+      Gerar QR de Presença (final da aula)
+    </button>
+  </form>
+</div>
+
+<a class="btn" href="/prof/roteiro{% if prof_k %}?k={{ prof_k }}{% endif %}">Roteiro</a>
 
   {% if token %}
     <p class="muted">

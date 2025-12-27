@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Biblioteca de Aulas</h1>
+<p class="muted">Abra o PDF no navegador ou baixe o PPTX.</p>
+
+<div class="card">
+  {% if itens and itens|length > 0 %}
+    <ul>
+      {% for a in itens %}
+        <li style="margin:10px 0;">
+          <strong>[{{ a.tipo }}]</strong>
+          <a href="{{ a.url }}" target="_blank">{{ a.nome }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">Nenhum arquivo em <code>app/static/aulas</code>.</p>
+  {% endif %}
+</div>
+
+<a class="btn" href="/prof/{% if prof_k %}?k={{ prof_k }}{% endif %}">Voltar</a>
+
+{% endblock %}

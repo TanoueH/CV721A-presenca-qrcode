@@ -11,12 +11,22 @@ from app.services.sheets import registrar_presenca
 
 from starlette.datastructures import URL
 
+from pathlib import Path
+from urllib.parse import quote
+
+import json
+from pathlib import Path
+
 DISCIPLINA = "Fundações (CV721A)"
 TURMA = "Engenharia Civil FEC – 2026"
 TTL_MIN = int(os.getenv("QR_TTL_MIN", "3"))
 
 # Se definido no Render, exige ?k=PROF_TOKEN nas rotas /prof
 PROF_TOKEN = os.getenv("PROF_TOKEN", "").strip()
+
+AULAS_DIR = Path("app/static/aulas")
+ROTEIRO_PATH = Path("app/static/roteiro.json")
+
 
 # Router do professor (tudo em /prof/...)
 router = APIRouter(prefix="/prof", tags=["Professor"])
@@ -107,12 +117,50 @@ def painel_professor(request: Request):
         },
     )
 
+@router.get("/aulas", response_class=HTMLResponse)
+def lista_aulas(request: Request):
+    _check_prof_key(request)
+
+    itens = []
+    if AULAS_DIR.exists():
+        for p in sorted(AULAS_DIR.iterdir()):
+            if p.is_file() and p.suffix.lower() in [".pdf", ".pptx", ".ppt"]:
+                itens.append({
+                    "nome": p.name,
+                    "url": f"/static/aulas/{quote(p.name)}",
+                    "tipo": p.suffix.lower().replace(".", "").upper(),
+                })
+
+    return request.app.state.templates.TemplateResponse(
+        "aulas.html",
+        {"request": request, "itens": itens, "prof_k": request.query_params.get("k", "")},
+    )
+
 @router.post("/aula/iniciar")
 def iniciar_aula(request: Request):
     _check_prof_key(request)
     STATE.iniciar()
     k = request.query_params.get("k", "")
     return RedirectResponse(url=f"/prof/?k={k}", status_code=303)
+
+@router.get("/roteiro", response_class=HTMLResponse)
+def roteiro(request: Request):
+    _check_prof_key(request)
+
+    data = {"titulo": "Roteiro de Aulas", "itens": []}
+    if ROTEIRO_PATH.exists():
+        data = json.loads(ROTEIRO_PATH.read_text(encoding="utf-8"))
+
+    # resolve URL + existência do arquivo
+    for it in data.get("itens", []):
+        arq = (it.get("arquivo") or "").strip()
+        it["url"] = f"/static/aulas/{arq}" if arq else ""
+        it["existe"] = bool(arq) and (AULAS_DIR / arq).exists()
+
+    return request.app.state.templates.TemplateResponse(
+        "roteiro.html",
+        {"request": request, "data": data, "prof_k": request.query_params.get("k", "")},
+    )
 
 @router.post("/aula/gerar_qr")
 def gerar_qr_final(request: Request):

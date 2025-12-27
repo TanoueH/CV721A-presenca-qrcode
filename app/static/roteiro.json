@@ -1,0 +1,17 @@
+{
+  "titulo": "Roteiro de Aulas — CV721A",
+  "itens": [
+    {
+      "aula": "Aula 01",
+      "tema": "Introdução",
+      "arquivo": "aula_0_Introdução_CV721-2024_sem1.pdf",
+      "kahoot_url": ""
+    },
+    {
+      "aula": "Aula 02",
+      "tema": "NBR 6122 — Conceitos",
+      "arquivo": "aula_2_Definições e Conceitos da NBR6122_Cap.4_CV721.pdf",
+      "kahoot_url": ""
+    }
+  ]
+}

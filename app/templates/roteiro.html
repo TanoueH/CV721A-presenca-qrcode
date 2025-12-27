@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>{{ data.titulo }}</h1>
+
+<div class="card">
+  {% if data.itens %}
+    {% for it in data.itens %}
+      <div class="card" style="margin:12px 0; padding:14px;">
+        <h2 style="margin:0 0 6px 0;">{{ it.aula }} — {{ it.tema }}</h2>
+
+        <div class="row">
+          {% if it.url and it.existe %}
+            <a class="btn" href="{{ it.url }}" target="_blank">Abrir material</a>
+          {% else %}
+            <span class="muted">Material não configurado</span>
+          {% endif %}
+
+          {% if it.kahoot_url %}
+            <a class="btn" href="{{ it.kahoot_url }}" target="_blank">Abrir Kahoot</a>
+          {% else %}
+            <span class="muted">Kahoot não configurado</span>
+          {% endif %}
+
+          <a class="btn primary" href="/kahoot{% if prof_k %}?k={{ prof_k }}{% endif %}">
+            Importar Kahoot
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p class="muted">Roteiro ainda não cadastrado.</p>
+  {% endif %}
+</div>
+
+<div class="row">
+  <a class="btn" href="/prof/aulas{% if prof_k %}?k={{ prof_k }}{% endif %}">Biblioteca</a>
+  <a class="btn" href="/prof/{% if prof_k %}?k={{ prof_k }}{% endif %}">Painel</a>
+</div>
+
+{% endblock %}

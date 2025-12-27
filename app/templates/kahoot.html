@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Importar Kahoot</h1>
+
+<div class="card">
+  <p class="muted">
+    Esta tela está em implementação. Aqui vamos importar os resultados do Kahoot e exportar notas para o Google Sheets.
+  </p>
+
+  <label style="display:block; font-weight:700; margin-top:10px;">Link do Kahoot (opcional)</label>
+  <input type="text" placeholder="Cole aqui o link do Kahoot" style="width:100%; padding:12px; border-radius:10px; border:1px solid rgba(0,0,0,.12);" />
+
+  <div class="row">
+    <button class="btn primary" type="button" disabled>Importar (em breve)</button>
+    <a class="btn" href="/prof/{% if prof_k %}?k={{ prof_k }}{% endif %}">Voltar ao Painel</a>
+  </div>
+</div>
+
+{% endblock %}
