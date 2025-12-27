@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
-from app.services.sheets import calcular_frequencia
+from app.services.frequencia import calcular_frequencia
 
 router = APIRouter()
 
