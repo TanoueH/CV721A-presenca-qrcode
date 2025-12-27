@@ -12,7 +12,7 @@ from app.routes.notas import router as notas_router
 from app.routes.kahoot import router as kahoot_router
 from app.routes.chamada import router as chamada_router
 
-app = FastAPI(title="CV721A Presença QRCode", version="1.0.0")
+app = FastAPI(title="SIGA - Sistema Integrado de Gestão Acadêmica", version="1.0.1")
 
 # Templates e arquivos estáticos
 app.state.templates = Jinja2Templates(directory="app/templates")
