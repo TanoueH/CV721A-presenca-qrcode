@@ -1,0 +1,9 @@
+services:
+  siga:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./secrets/service_account.json:/app/secrets/service_account.json:ro
