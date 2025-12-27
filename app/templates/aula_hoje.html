@@ -7,14 +7,21 @@
 <div class="card">
   <h2>Aula de Hoje</h2>
   <ol>
-    <li>Clique em <strong>Iniciar aula</strong>.</li>
-    <li>Abra a tela de <strong>Projeção</strong> (QR + timer).</li>
+    <li>Clique em <strong>Iniciar aula</strong> (sem QR).</li>
+    <li>Aplique o <strong>Kahoot</strong> normalmente.</li>
+    <li>No final, clique em <strong>Gerar QR de Presença</strong> e abra a <strong>Projeção</strong>.</li>
     <li>Encerrar ao final.</li>
   </ol>
 
-  <form action="/prof/aula/iniciar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
-    <button class="btn primary" type="submit">Iniciar aula (Gerar QR)</button>
-  </form>
+  <div class="row">
+    <form action="/prof/aula/iniciar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
+      <button class="btn primary" type="submit">Iniciar aula</button>
+    </form>
+
+    <form action="/prof/aula/gerar_qr{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
+      <button class="btn success" type="submit">Gerar QR de Presença (final da aula)</button>
+    </form>
+  </div>
 
   {% if token %}
     <p class="muted">
@@ -34,13 +41,25 @@
     </div>
 
     <div class="row">
-      <button class="btn" type="button" id="btn_renovar">Renovar QR</button>
+      {% if ativa %}
+        <form action="/prof/aula/renovar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
+          <button class="btn" type="submit">Renovar QR</button>
+        </form>
+      {% else %}
+        <form action="/prof/aula/gerar_qr{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
+          <button class="btn" type="submit">Gerar novo QR</button>
+        </form>
+      {% endif %}
     </div>
-
-    <form action="/prof/aula/encerrar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
-      <button class="btn danger" type="submit">Encerrar aula</button>
-    </form>
+  {% else %}
+    <p class="muted">
+      QR ainda não foi gerado. Gere o QR apenas no final da aula.
+    </p>
   {% endif %}
+
+  <form action="/prof/aula/encerrar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
+    <button class="btn danger" type="submit">Encerrar aula</button>
+  </form>
 </div>
 
 <div class="row">
@@ -53,7 +72,6 @@
 <script>
 (function () {
   const profK = "{{ prof_k }}".trim();
-  const btnRenovar = document.getElementById("btn_renovar");
   const qtdSpan = document.getElementById("qtd_presentes");
   const msgEl = document.getElementById("msg");
   const lnkQr = document.getElementById("lnk_qr");
@@ -64,45 +82,17 @@
   }
 
   function setMsg(text, kind){
-  if (!msgEl) return;
+    if (!msgEl) return;
+    msgEl.textContent = text || "";
+    msgEl.classList.remove("success", "error", "warn");
+    if (kind) msgEl.classList.add(kind);
+  }
 
-  msgEl.textContent = text || "";
-
-  // limpa classes anteriores
-  msgEl.classList.remove("success", "error", "warn");
-
-  // aplica tipo (success/error/warn)
-  if (kind) msgEl.classList.add(kind);
-}
-
-
-  async function renovar() {
-    btnRenovar.disabled = true;
-    btnRenovar.textContent = "Renovando...";
-    try {
-      const res = await fetch(withKey("/prof/aula/renovar"), { method: "POST" });
-      if (res.status === 401 || res.status === 403){
-        setMsg("Acesso restrito (chave inválida).", "error");
-        throw new Error("Acesso restrito");
-      }
-      if (!res.ok) throw new Error("Falha ao renovar");
-      await res.json();
-
-      // Atualiza o link do QR com cache-buster (para aba aberta não mostrar cache)
-      const v = Date.now();
-      if (lnkQr){
-        const base = withKey("/prof/qr.png");
-        lnkQr.href = base + (base.includes("?") ? "&" : "?") + "v=" + v;
-      }
-
-      btnRenovar.textContent = "QR renovado";
-      setTimeout(() => (btnRenovar.textContent = "Renovar QR"), 1500);
-      setMsg("", null);
-    } catch (e) {
-      btnRenovar.textContent = "Erro ao renovar";
-      setTimeout(() => (btnRenovar.textContent = "Renovar QR"), 2000);
-    } finally {
-      btnRenovar.disabled = false;
+  function bustQrLink(){
+    const v = Date.now();
+    if (lnkQr){
+      const base = withKey("/prof/qr.png");
+      lnkQr.href = base + (base.includes("?") ? "&" : "?") + "v=" + v;
     }
   }
 
@@ -110,7 +100,7 @@
     try {
       const res = await fetch(withKey("/prof/status"));
       if (res.status === 401 || res.status === 403){
-        setMsg("Acesso restrito (chave inválida).");
+        setMsg("Acesso restrito (chave inválida).", "error");
         return;
       }
       if (!res.ok) return;
@@ -119,13 +109,12 @@
       if (qtdSpan && typeof data.qtd_presentes === "number") {
         qtdSpan.textContent = String(data.qtd_presentes);
       }
-      setMsg("");
+      setMsg("", null);
     } catch (_) {}
   }
 
-  if (btnRenovar) btnRenovar.addEventListener("click", renovar);
-
-  pollStatus();               // primeira atualização imediata
+  bustQrLink();
+  pollStatus();
   setInterval(pollStatus, 2000);
 })();
 </script>

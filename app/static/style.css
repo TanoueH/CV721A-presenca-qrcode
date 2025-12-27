@@ -133,8 +133,81 @@ button.btn{ cursor:pointer; }
   font-size: inherit;
 }
 
-  .msg-inline.success{ background: #e6f4ea; }
-  .msg-inline.error{ background: #fdecea; }
-  .msg-inline.warn{ background: #fff4ce; }
+/* =========================
+   PROJEÇÃO (MODO TV)
+   Ativado por: <div class="projecao tv">
+   ========================= */
+
+.projecao.tv{
+  min-height: 100vh;
+  padding: 18px;
+}
+
+.projecao.tv .topbar{
+  gap: 18px;
+}
+
+.projecao.tv .title{
+  font-size: 34px;
+  line-height: 1.15;
+}
+
+.projecao.tv .subtitle{
+  opacity: 0.85;
+  margin-top: 6px;
+}
+
+.projecao.tv .stats{
+  display: grid;
+  gap: 10px;
+  font-size: 20px;
+}
+
+.projecao.tv .stats strong{
+  font-weight: 800;
+}
+
+.projecao.tv .qrwrap{
+  margin: 18px auto 10px;
+  padding: 14px;
+}
+
+.projecao.tv .qrwrap img#qr{
+  width: min(72vh, 74vw);
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.20);
+}
+
+.projecao.tv .footer{
+  margin-top: 12px;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.projecao.tv .actions{
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.projecao.tv .standby-card{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 22px;
+  font-size: 22px;
+  line-height: 1.35;
+}
+
+.projecao.tv .standby-card h2{
+  font-size: 30px;
+  margin: 0 0 10px 0;
+}
+
+.msg-inline.success{ background: #e6f4ea; }
+.msg-inline.error{ background: #fdecea; }
+.msg-inline.warn{ background: #fff4ce; }
 
 

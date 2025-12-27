@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="projecao">
+<div class="projecao tv">
   <div class="topbar">
     <div>
       <div class="title">{{ disciplina }}</div>
@@ -15,13 +15,30 @@
     </div>
   </div>
 
-  <div style="margin-top:10px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
-    <button class="btn primary" id="btn-renovar" type="button">Renovar QR</button>
-    <a class="btn" href="/prof/{% if prof_k %}?k={{ prof_k }}{% endif %}" target="_blank">Painel</a>
+  <div class="actions" id="actions">
+  <button class="btn primary" id="btn-renovar" type="button" {% if not token %}style="display:none;"{% endif %}>
+    Renovar QR
+  </button>
+
+  <a class="btn" href="/prof/{% if prof_k %}?k={{ prof_k }}{% endif %}" target="_blank">
+    Painel
+  </a>
+</div>
+
+
+  <!-- MODO STANDBY vs QR -->
+  <div class="qrwrap" id="qrwrap" {% if not token %}style="display:none;"{% endif %}>
+    <img id="qr" src="/prof/qr.png{% if prof_k %}?k={{ prof_k }}{% endif %}" alt="QR Code">
   </div>
 
-  <div class="qrwrap">
-    <img id="qr" src="/prof/qr.png{% if prof_k %}?k={{ prof_k }}{% endif %}" alt="QR Code">
+  <div class="qrwrap" id="standby" {% if token %}style="display:none;"{% endif %}>
+    <div class="card" style="max-width:900px; margin:0 auto;">
+      <h2 style="margin-top:0;">Aguardando QR de presença</h2>
+      <p style="margin-bottom:0;">
+        O QR será gerado <strong>ao final da aula</strong>. No painel do professor, clique em
+        <strong>“Gerar QR de Presença (final da aula)”</strong>.
+      </p>
+    </div>
   </div>
 
   <div class="footer">
@@ -33,6 +50,11 @@
 (function () {
   const profK = "{{ prof_k }}".trim();
   const msgEl = document.getElementById("msg");
+  const qrWrap = document.getElementById("qrwrap");
+  const standby = document.getElementById("standby");
+  const btnRenovar = document.getElementById("btn-renovar");
+  const img = document.getElementById("qr");
+
   let qrVersion = Date.now();
   let lastExpireMs = null;
 
@@ -54,12 +76,21 @@
 
   function refreshQR(){
     qrVersion = Date.now();
-    const img = document.getElementById("qr");
     const base = withKey("/prof/qr.png");
-    img.src = base + (base.includes("?") ? "&" : "?") + "v=" + qrVersion;
+    if (img) img.src = base + (base.includes("?") ? "&" : "?") + "v=" + qrVersion;
   }
 
   function fmt2(n){ return String(n).padStart(2, "0"); }
+
+  function setStandbyMode(on){
+    if (standby) standby.style.display = on ? "block" : "none";
+    if (qrWrap) qrWrap.style.display = on ? "none" : "block";
+    if (btnRenovar) btnRenovar.disabled = on; // não renova sem QR
+    if (on){
+      document.getElementById("expira").textContent = "--:--:--";
+      document.getElementById("restante").textContent = "--:--";
+    }
+  }
 
   async function tick(){
     try{
@@ -73,15 +104,25 @@
       const st = await r.json();
       document.getElementById("presentes").textContent = st.qtd_presentes ?? 0;
 
+      // standby: sem token
+      if (!st.token_ativo){
+        setStandbyMode(true);
+        setMsg("QR ainda não foi gerado.");
+        lastExpireMs = null;
+        return;
+      }
+
+      setStandbyMode(false);
+      setMsg("");
+
       let expMs = null;
       if (typeof st.expira_epoch_ms === "number") expMs = st.expira_epoch_ms;
       else if (st.expira_em) expMs = new Date(st.expira_em).getTime();
 
       if (!expMs){
-        setMsg("Aula ainda não iniciada.");
+        setMsg("QR ainda não foi gerado.");
         return;
       }
-      setMsg("");
 
       // Se mudou a expiração (novo QR), atualiza imagem automaticamente
       if (lastExpireMs !== null && expMs !== lastExpireMs){
@@ -107,27 +148,28 @@
     } catch(e) {}
   }
 
-  document.getElementById("btn-renovar").addEventListener("click", async () => {
-    const btn = document.getElementById("btn-renovar");
-    try{
-      btn.disabled = true;
-      btn.textContent = "Renovando...";
+  // Renovar via fetch, mas SEM res.json() (rota redireciona)
+  if (btnRenovar){
+    btnRenovar.addEventListener("click", async () => {
+      try{
+        btnRenovar.disabled = true;
+        btnRenovar.textContent = "Renovando...";
 
-      const r = await fetch(withKey("/prof/aula/renovar"), { method: "POST" });
-      if (!r.ok) throw new Error("Falha ao renovar");
-      await r.json();
+        const r = await fetch(withKey("/prof/aula/renovar"), { method: "POST", redirect: "follow" });
+        if (!r.ok) throw new Error("Falha ao renovar");
 
-      refreshQR();
-      await tick();
+        refreshQR();
+        await tick();
 
-      btn.textContent = "Renovar QR";
-      btn.disabled = false;
-    } catch(e){
-      btn.textContent = "Erro — tente de novo";
-      btn.disabled = false;
-      setTimeout(() => (btn.textContent = "Renovar QR"), 2000);
-    }
-  });
+        btnRenovar.textContent = "Renovar QR";
+        btnRenovar.disabled = false;
+      } catch(e){
+        btnRenovar.textContent = "Erro — tente de novo";
+        btnRenovar.disabled = false;
+        setTimeout(() => (btnRenovar.textContent = "Renovar QR"), 2000);
+      }
+    });
+  }
 
   setInterval(tick, 1000);
   tick();

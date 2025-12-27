@@ -26,21 +26,36 @@ public_router = APIRouter(tags=["Check-in"])
 
 class AulaState:
     def __init__(self):
+        self.aula_iniciada: bool = False
         self.token: Optional[str] = None
         self.expira_em: Optional[datetime] = None
         self.presentes: Set[str] = set()
 
     def iniciar(self):
-        self.token = secrets.token_urlsafe(16)
-        self.expira_em = datetime.now() + timedelta(minutes=TTL_MIN)
-        self.presentes.clear()
-
-    def encerrar(self):
+        # Inicia a aula SEM gerar QR
+        self.aula_iniciada = True
         self.token = None
         self.expira_em = None
-        self.presentes.clear()
+        self.presentes = set()
 
-    def ativa(self) -> bool:
+    def gerar_qr(self):
+        # Gera QR (final da aula)
+        if not self.aula_iniciada:
+            self.aula_iniciada = True  # opcional: permitir gerar mesmo sem "iniciar"
+        self.token = secrets.token_urlsafe(16)
+        self.expira_em = datetime.now() + timedelta(minutes=TTL_MIN)
+
+    def renovar_qr(self):
+        self.gerar_qr()
+
+    def encerrar(self):
+        # Encerra aula e limpa tudo
+        self.aula_iniciada = False
+        self.token = None
+        self.expira_em = None
+        self.presentes = set()
+
+    def qr_ativo(self) -> bool:
         return bool(self.token and self.expira_em and datetime.now() <= self.expira_em)
 
 STATE = AulaState()
@@ -86,7 +101,7 @@ def painel_professor(request: Request):
             "ttl_min": TTL_MIN,
             "token": STATE.token,
             "expira_em": STATE.expira_em,
-            "ativa": STATE.ativa(),
+            "ativa": STATE.qr_ativo(),
             "qtd_presentes": len(STATE.presentes),
             "prof_k": request.query_params.get("k", ""),
         },
@@ -96,6 +111,13 @@ def painel_professor(request: Request):
 def iniciar_aula(request: Request):
     _check_prof_key(request)
     STATE.iniciar()
+    k = request.query_params.get("k", "")
+    return RedirectResponse(url=f"/prof/?k={k}", status_code=303)
+
+@router.post("/aula/gerar_qr")
+def gerar_qr_final(request: Request):
+    _check_prof_key(request)
+    STATE.gerar_qr()
     k = request.query_params.get("k", "")
     return RedirectResponse(url=f"/prof/projecao?k={k}", status_code=303)
 
@@ -110,22 +132,13 @@ def encerrar_aula(request: Request):
 @router.post("/aula/renovar")
 def renovar_aula(request: Request):
     _check_prof_key(request)
-    STATE.iniciar()
-    return {
-        "ok": True,
-        "expira_em": STATE.expira_em.isoformat() if STATE.expira_em else None,
-        "expira_epoch_ms": int(STATE.expira_em.timestamp() * 1000) if STATE.expira_em else None,
-        "ttl_min": TTL_MIN,
-    }
-
+    STATE.renovar_qr()
+    k = request.query_params.get("k", "")
+    return RedirectResponse(url=f"/prof/projecao?k={k}", status_code=303)
 
 @router.get("/projecao", response_class=HTMLResponse)
 def projecao(request: Request):
     _check_prof_key(request)
-
-    if not STATE.token:
-        k = request.query_params.get("k", "")
-        return RedirectResponse(url=f"/prof/?k={k}", status_code=303)
 
     return request.app.state.templates.TemplateResponse(
         "projecao.html",
@@ -133,13 +146,13 @@ def projecao(request: Request):
             "request": request,
             "disciplina": DISCIPLINA,
             "turma": TURMA,
-            "ativa": STATE.ativa(),
+            "ativa": STATE.qr_ativo(),
+            "token": STATE.token,                 # importante para standby
             "expira_em": STATE.expira_em,
             "qtd_presentes": len(STATE.presentes),
             "prof_k": request.query_params.get("k", ""),
         },
     )
-
 
 @router.get("/qr.png")
 def qr_png(request: Request):
@@ -167,7 +180,7 @@ def status(request: Request):
 
     return {
         "token_ativo": bool(STATE.token),
-        "ativa": STATE.ativa(),
+        "ativa": STATE.qr_ativo(),
         "expira_em": STATE.expira_em.isoformat() if STATE.expira_em else None,
         "expira_epoch_ms": int(STATE.expira_em.timestamp() * 1000) if STATE.expira_em else None,
         "qtd_presentes": len(STATE.presentes),
@@ -180,7 +193,7 @@ def status(request: Request):
 # =========================
 @public_router.get("/checkin/{token}", response_class=HTMLResponse)
 def checkin_form(request: Request, token: str):
-    if not STATE.ativa() or token != STATE.token:
+    if (not STATE.qr_ativo()) or token != STATE.token:
         return HTMLResponse("<h3>QR inválido ou expirado.</h3>", status_code=401)
 
     aviso = ""
@@ -205,7 +218,7 @@ logger = logging.getLogger("uvicorn.error")
 
 @public_router.post("/checkin/{token}", response_class=HTMLResponse)
 def checkin_submit(request: Request, token: str, ra: str = Form(...), nome: str = Form(...)):
-    if not STATE.ativa() or token != STATE.token:
+    if (not STATE.qr_ativo()) or token != STATE.token:
         return HTMLResponse("QR inválido ou expirado.", status_code=401)
 
     ra = ra.strip()
@@ -220,12 +233,9 @@ def checkin_submit(request: Request, token: str, ra: str = Form(...), nome: str 
         logger.exception("Falha ao registrar presença no Sheets")
         return HTMLResponse(
             "<h3>Não foi possível registrar agora.</h3>"
-            "<p>Avise o professor e tente novamente.</p>",
+            "<p>Tente novamente. Avise o professor.</p>",
             status_code=502,
         )
 
     STATE.presentes.add(ra)
-    return HTMLResponse("<h3>Presença registrada com sucesso!</h3>")
-
-    return {"build": "v-2025-12-26-01",
-    }
+    return HTMLResponse("<h3>Presença registrada com sucesso!</h3>")  
