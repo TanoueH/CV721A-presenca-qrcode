@@ -195,3 +195,31 @@ def calcular_frequencia() -> Tuple[int, List[Dict[str, Any]]]:
     alunos.sort(key=lambda x: x["ra"])
 
     return total_aulas, alunos
+
+def registrar_presenca(ra: str, aula_id: str):
+    """
+    Wrapper de compatibilidade para rotas antigas.
+
+    Regras:
+    - valida RA (6 dígitos)
+    - evita duplicidade (aula_id + ra)
+    - registra presença como OK
+    - se inválido, registra pendência
+    """
+    ra = normalize_ra(ra)
+
+    if not validate_ra(ra):
+        append_pendencia(aula_id, ra, "RA_INVALIDO")
+        raise ValueError("RA inválido")
+
+    if ja_registrou_na_aula(aula_id, ra):
+        append_checkin(aula_id, ra, "DUPLICADO")
+        return
+
+    aluno = get_aluno_por_ra(ra)
+    if not aluno:
+        append_pendencia(aula_id, ra, "RA_NAO_ENCONTRADO")
+        raise ValueError("RA não encontrado na lista da turma")
+
+    append_checkin(aula_id, ra, "OK")
+
