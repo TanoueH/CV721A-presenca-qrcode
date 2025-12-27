@@ -9,6 +9,9 @@ import gspread
 from gspread.exceptions import WorksheetNotFound, APIError
 from google.oauth2.service_account import Credentials
 
+from typing import Tuple, List, Dict, Any
+
+
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive",
@@ -91,6 +94,8 @@ def append_pendencia(aula_id: str, ra: str, motivo: str):
     ws = ensure_ws("Pendencias", ["timestamp", "aula_id", "ra_informado", "motivo"])
     ws.append_row([_now_iso(), aula_id, ra, motivo])
 
+
+
 def ja_registrou_na_aula(aula_id: str, ra: str) -> bool:
     """
     Deduplicação simples: varre Checkins e checa (aula_id, ra) com status OK.
@@ -107,3 +112,86 @@ def ja_registrou_na_aula(aula_id: str, ra: str) -> bool:
             if str(r.get("status", "")).strip().upper() == "OK":
                 return True
     return False
+
+
+def calcular_frequencia() -> Tuple[int, List[Dict[str, Any]]]:
+    """
+    Calcula frequência a partir da aba 'Checkins'.
+
+    Regras:
+    - Conta apenas status == "OK"
+    - Frequência = nº de aulas distintas (aula_id) por RA
+    - Total de aulas = nº de aula_id distintos no log
+    """
+    ws = get_ws("Checkins")
+    rows = ws.get_all_records()
+
+    if not rows:
+        return 0, []
+
+    # --------
+    # Detecta colunas (case-insensitive)
+    # --------
+    def pick_key(d: dict, candidates: list[str]) -> str | None:
+        keys = {k.lower(): k for k in d.keys()}
+        for c in candidates:
+            if c.lower() in keys:
+                return keys[c.lower()]
+        return None
+
+    sample = rows[0]
+
+    k_aula = pick_key(sample, ["aula_id"])
+    k_ra = pick_key(sample, ["ra"])
+    k_status = pick_key(sample, ["status"])
+
+    if not k_aula or not k_ra:
+        raise RuntimeError(
+            f"Aba 'Checkins' precisa conter colunas 'aula_id' e 'ra'. "
+            f"Headers encontrados: {list(sample.keys())}"
+        )
+
+    # --------
+    # Coleta aulas válidas
+    # --------
+    aulas_validas = set()
+    presencas_por_ra: Dict[str, set] = {}
+
+    for r in rows:
+        aula_id = str(r.get(k_aula, "")).strip()
+        ra = str(r.get(k_ra, "")).strip()
+        status = str(r.get(k_status, "")).strip().upper() if k_status else "OK"
+
+        if not aula_id or not ra:
+            continue
+
+        if status != "OK":
+            continue
+
+        aulas_validas.add(aula_id)
+
+        if ra not in presencas_por_ra:
+            presencas_por_ra[ra] = set()
+
+        presencas_por_ra[ra].add(aula_id)
+
+    total_aulas = len(aulas_validas)
+
+    # --------
+    # Monta retorno
+    # --------
+    alunos = []
+    for ra, aulas in presencas_por_ra.items():
+        pres = len(aulas)
+        freq = (pres / total_aulas * 100.0) if total_aulas else 0.0
+
+        alunos.append({
+            "ra": ra,
+            "presencas": pres,
+            "frequencia": round(freq, 1),
+        })
+
+    # ordena por RA (estável)
+    alunos.sort(key=lambda x: x["ra"])
+
+    return total_aulas, alunos
