@@ -25,7 +25,7 @@
   </form>
 </div>
 
-<a class="btn" href="/prof/roteiro{% if prof_k %}?k={{ prof_k }}{% endif %}">Roteiro</a>
+<a class="btn" href="{{ request.base_url }}prof/projecao{% if prof_k %}?k={{ prof_k }}{% endif %}">
 
   {% if token %}
     <p class="muted">
@@ -80,10 +80,16 @@
   const msgEl = document.getElementById("msg");
   const lnkQr = document.getElementById("lnk_qr");
 
-  function withKey(url){
-    if (!profK) return url;
-    return url + (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(profK);
+  function withKey(path) {
+  const base = "{{ request.base_url }}".replace(/\/$/, "");
+  const clean = path.startsWith("/") ? path.slice(1) : path;
+  let url = base + "/" + clean;
+
+  if (profK) {
+    url += (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(profK);
   }
+  return url;
+}
 
   function setMsg(text, kind){
     if (!msgEl) return;
