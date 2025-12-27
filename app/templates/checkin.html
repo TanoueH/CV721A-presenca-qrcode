@@ -26,13 +26,18 @@
                placeholder="RA"
                required
                inputmode="numeric"
+               pattern="[0-9]{5,15}"
                autocomplete="off"
+               autocorrect="off"
+               autocapitalize="off"
                style="font-size:16px; padding:12px; width:100%; max-width:420px;">
 
         <input name="nome"
                placeholder="Nome completo"
                required
                autocomplete="name"
+               autocapitalize="words"
+               spellcheck="false"
                style="font-size:16px; padding:12px; width:100%; max-width:420px;">
 
         <button type="submit"
@@ -42,6 +47,14 @@
         </button>
 
       </form>
+
+      <footer class="footer">
+        <small>
+          SIGA · FEC / UNICAMP<br>
+          Sistema Institucional de Gestão de Aula
+        </small>
+      </footer>
+
     </div>
   </main>
 </body>

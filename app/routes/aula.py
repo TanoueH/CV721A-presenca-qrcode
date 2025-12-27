@@ -6,7 +6,7 @@ from typing import Optional, Set
 from fastapi import APIRouter, Request, HTTPException, Form
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
 
-from app.services.qr import gerar_qr_png
+from app.services.qr import gerar_qr_png, build_checkin_url
 from app.services.sheets import registrar_presenca
 
 from starlette.datastructures import URL
@@ -16,6 +16,7 @@ from urllib.parse import quote
 
 import json
 from pathlib import Path
+
 
 DISCIPLINA = "Fundações (CV721A)"
 TURMA = "Engenharia Civil FEC – 2026"
@@ -213,7 +214,7 @@ def qr_png(request: Request):
             media_type="text/plain; charset=utf-8",
         )
 
-    url_checkin = f"{base_url(request)}/checkin/{STATE.token}"
+    url_checkin = build_checkin_url(STATE.token)
     print("CHECKIN_URL =", url_checkin)
 
     png = gerar_qr_png(url_checkin)
