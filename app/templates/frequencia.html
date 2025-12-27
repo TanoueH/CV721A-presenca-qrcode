@@ -34,7 +34,9 @@
           <td>{{ a.nome }}</td>
           <td>{{ a.presencas }}</td>
           <td>{{ a.faltas }}</td>
-          <td>{{ "%.1f"|format(a.percentual) }}%</td>
+          <td>
+              {{ "%.1f"|format(a.get("percentual", 0)) }}%
+          </td>
         </tr>
       {% endfor %}
     </tbody>
