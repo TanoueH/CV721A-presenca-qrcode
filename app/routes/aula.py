@@ -169,7 +169,8 @@ def gerar_qr_final(request: Request):
 
     k = request.query_params.get("k", "")
 
-    base_url = request.headers.get("x-forwarded-proto", "https") + "://" + request.headers["host"]
+    BASE_URL = os.getenv("BASE_URL", "https://cv721a-presenca-qrcode.onrender.com")
+    base_url = BASE_URL.rstrip("/")
     url = f"{base_url}/prof/projecao?k={k}"
 
     return RedirectResponse(url=url, status_code=303)
@@ -213,10 +214,9 @@ def qr_png(request: Request):
 
     if not STATE.token:
         return Response(
-            status_code=404,
-            content="QR ainda não gerado.",
-            media_type="text/plain; charset=utf-8",
-        )
+         content=b"",
+         status_code=204
+    )
 
     url_checkin = build_checkin_url(STATE.token)
     print("CHECKIN_URL =", url_checkin)
