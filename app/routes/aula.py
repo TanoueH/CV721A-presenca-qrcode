@@ -15,8 +15,6 @@ from pathlib import Path
 from urllib.parse import quote
 
 import json
-from pathlib import Path
-
 
 DISCIPLINA = "Fundações (CV721A)"
 TURMA = "Engenharia Civil FEC – 2026"
@@ -163,12 +161,18 @@ def roteiro(request: Request):
         {"request": request, "data": data, "prof_k": request.query_params.get("k", "")},
     )
 
+
 @router.post("/aula/gerar_qr")
 def gerar_qr_final(request: Request):
     _check_prof_key(request)
     STATE.gerar_qr()
+
     k = request.query_params.get("k", "")
-    return RedirectResponse(url=f"/prof/projecao?k={k}", status_code=303)
+
+    base_url = request.headers.get("x-forwarded-proto", "https") + "://" + request.headers["host"]
+    url = f"{base_url}/prof/projecao?k={k}"
+
+    return RedirectResponse(url=url, status_code=303)
 
 @router.post("/aula/encerrar")
 def encerrar_aula(request: Request):
