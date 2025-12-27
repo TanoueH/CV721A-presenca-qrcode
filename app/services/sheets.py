@@ -184,11 +184,13 @@ def calcular_frequencia() -> Tuple[int, List[Dict[str, Any]]]:
     for ra, aulas in presencas_por_ra.items():
         pres = len(aulas)
         freq = (pres / total_aulas * 100.0) if total_aulas else 0.0
+        percentual = round((pres / total_aulas) * 100, 1) if total_aulas else 0.0
 
         alunos.append({
             "ra": ra,
             "presencas": pres,
             "frequencia": round(freq, 1),
+            "percentual": percentual,
         })
 
     # ordena por RA (estável)
