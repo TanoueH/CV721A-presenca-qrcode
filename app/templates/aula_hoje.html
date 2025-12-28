@@ -4,8 +4,12 @@
 <h1>SIGA - Sistema Integrado de Gestão Academica – {{ disciplina }}</h1>
 <p><strong>Turma:</strong> {{ turma }}</p>
 
-<div class="card">
-  <h2>Aula de Hoje</h2>
+<!-- =========================
+     CONDUÇÃO DA AULA
+========================= -->
+<section class="card">
+  <h2>Condução da Aula</h2>
+
   <ol>
     <li>Clique em <strong>Iniciar aula</strong> (sem QR).</li>
     <li>Aplique o <strong>Kahoot</strong> normalmente.</li>
@@ -13,19 +17,22 @@
     <li>Encerrar ao final.</li>
   </ol>
 
-<div class="row">
-  <a class="btn primary" href="/prof/aulas{% if prof_k %}?k={{ prof_k }}{% endif %}">
-    Iniciar aula (abrir apresentações)
-  </a>
+  <div class="row">
+    <a class="btn primary"
+       href="/prof/aulas{% if prof_k %}?k={{ prof_k }}{% endif %}">
+      Iniciar aula (abrir apresentações)
+    </a>
 
-  <form action="/prof/aula/gerar_qr{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
-    <button class="btn success" type="submit">
-      Gerar QR de Presença (final da aula)
-    </button>
-  </form>
-</div>
+    <form action="/prof/aula/gerar_qr{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
+      <button class="btn success" type="submit">
+        Gerar QR de Presença (final da aula)
+      </button>
+    </form>
 
-<a class="btn" href="{{ request.base_url }}prof/projecao{% if prof_k %}?k={{ prof_k }}{% endif %}">
+    <form action="/prof/aula/encerrar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
+      <button class="btn danger" type="submit">Encerrar aula</button>
+    </form>
+  </div>
 
   {% if token %}
     <p class="muted">
@@ -36,15 +43,18 @@
     </p>
 
     <div class="row">
-      <a class="btn" id="lnk_proj" href="/prof/projecao{% if prof_k %}?k={{ prof_k }}{% endif %}" target="_blank">
+      <a class="btn" id="lnk_proj"
+         href="/prof/projecao{% if prof_k %}?k={{ prof_k }}{% endif %}"
+         target="_blank" rel="noopener">
         Abrir Projeção (tela cheia)
       </a>
-      <a class="btn" id="lnk_qr" href="/prof/qr.png{% if prof_k %}?k={{ prof_k }}{% endif %}" target="_blank">
+
+      <a class="btn" id="lnk_qr"
+         href="/prof/qr.png{% if prof_k %}?k={{ prof_k }}{% endif %}"
+         target="_blank" rel="noopener">
         Abrir QR (imagem)
       </a>
-    </div>
 
-    <div class="row">
       {% if ativa %}
         <form action="/prof/aula/renovar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
           <button class="btn" type="submit">Renovar QR</button>
@@ -59,18 +69,50 @@
     <p class="muted">
       QR ainda não foi gerado. Gere o QR apenas no final da aula.
     </p>
+
+    <div class="row">
+      <a class="btn"
+         href="/prof/projecao{% if prof_k %}?k={{ prof_k }}{% endif %}"
+         target="_blank" rel="noopener">
+        Abrir Projeção
+      </a>
+    </div>
   {% endif %}
+</section>
 
-  <form action="/prof/aula/encerrar{% if prof_k %}?k={{ prof_k }}{% endif %}" method="post">
-    <button class="btn danger" type="submit">Encerrar aula</button>
-  </form>
-</div>
+<!-- =========================
+     FERRAMENTAS DA AULA
+========================= -->
+<section class="card">
+  <h2>Ferramentas da Aula</h2>
 
-<div class="row">
-  <a class="btn" href="/frequencia">Frequência</a>
-  <a class="btn" href="/notas">Notas</a>
-  <a class="btn" href="/kahoot">Importar Kahoot</a>
-</div>
+  <div class="row">
+    <a class="btn"
+       href="/kahoot{% if prof_k %}?k={{ prof_k }}{% endif %}">
+      Importar Resultados (Kahoot)
+    </a>
+
+    <!-- Se você tiver uma rota para "abrir kahoot" (externo), coloque aqui.
+         Mantive um placeholder seguro (não quebra).
+    -->
+    <a class="btn"
+       href="https://create.kahoot.it/"
+       target="_blank" rel="noopener">
+      Abrir Kahoot (externo)
+    </a>
+  </div>
+</section>
+
+<!-- =========================
+     RESULTADOS
+========================= -->
+<section class="card">
+  <h2>Resultados</h2>
+  <div class="row">
+    <a class="btn" href="/frequencia{% if prof_k %}?k={{ prof_k }}{% endif %}">Frequência</a>
+    <a class="btn" href="/notas{% if prof_k %}?k={{ prof_k }}{% endif %}">Notas</a>
+  </div>
+</section>
 
 {% if token %}
 <script>
@@ -81,15 +123,15 @@
   const lnkQr = document.getElementById("lnk_qr");
 
   function withKey(path) {
-  const base = "{{ request.base_url }}".replace(/\/$/, "");
-  const clean = path.startsWith("/") ? path.slice(1) : path;
-  let url = base + "/" + clean;
+    const base = "{{ request.base_url }}".replace(/\/$/, "");
+    const clean = path.startsWith("/") ? path.slice(1) : path;
+    let url = base + "/" + clean;
 
-  if (profK) {
-    url += (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(profK);
+    if (profK) {
+      url += (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(profK);
+    }
+    return url;
   }
-  return url;
-}
 
   function setMsg(text, kind){
     if (!msgEl) return;
@@ -108,7 +150,7 @@
 
   async function pollStatus() {
     try {
-      const res = await fetch(withKey("/prof/status"));
+      const res = await fetch(withKey("/prof/status"), { cache: "no-store" });
       if (res.status === 401 || res.status === 403){
         setMsg("Acesso restrito (chave inválida).", "error");
         return;

@@ -7,6 +7,23 @@
   --card:#fff;
   --primary:#0b57d0;
   --danger:#b3261e;
+  :root{
+  --fg:#111;
+  --muted:#555;
+  --bg:#f7f7f8;
+  --card:#fff;
+
+  --primary:#0b57d0;
+  --danger:#b3261e;
+
+  /* NOVOS: semântica institucional */
+  --success:#137333;     /* verde sóbrio */
+  --warning:#b06000;     /* âmbar sóbrio */
+  --border: rgba(0,0,0,.12);
+  --shadow: 0 2px 10px rgba(0,0,0,.06);
+  --focus: rgba(11,87,208,.28);
+}
+
 }
 
 *{ box-sizing:border-box; }
@@ -37,9 +54,13 @@ input[type="text"], input[type="number"], input[type="tel"], input[type="email"]
   background: #fff;
 }
 
-button.btn{
-  width: 100%;
-}
+/* padrão: botões não ocupam 100% */
+button.btn{ width: auto; }
+
+/* aluno (check-in): botões ocupam a largura toda */
+.checkin button.btn{ width: 100%; }
+.checkin .btn{ width: 100%; }
+
 
 .muted{ color: var(--muted); }
 
@@ -51,34 +72,68 @@ button.btn{
   margin: 14px 0;
 }
 
-.row > * { margin: 0 10px 10px 0; }
+.row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.row > *{
+  margin: 0; /* o gap cuida disso */
+}
+
 
 .btn{
-  display:inline-block;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(0,0,0,.12);
+  border: 1px solid var(--border);
   background: #fff;
   color: #111;
   text-decoration:none;
   font-weight:600;
+
+  cursor: pointer;
+  user-select: none;
+  transition: transform .02s ease, filter .15s ease, box-shadow .15s ease;
 }
+
+.btn:hover{ filter: brightness(0.98); }
+.btn:active{ transform: translateY(1px); }
+
+.btn:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus);
+}
+
 .btn.primary{
   background: var(--primary);
   color:#fff;
   border-color: transparent;
 }
+
+.btn.success{
+  background: var(--success);
+  color:#fff;
+  border-color: transparent;
+}
+
+.btn.warning{
+  background: var(--warning);
+  color:#fff;
+  border-color: transparent;
+}
+
 .btn.danger{
   background: var(--danger);
   color:#fff;
   border-color: transparent;
 }
 
-button.btn{ cursor:pointer; }
-
-input, button {
-  font-size: 16px;
-}
 
 /* Projeção (tela cheia) */
 .projecao{
