@@ -142,6 +142,7 @@ def projecao(request: Request):
     expira_em = getattr(STATE, "expires_at", None) or getattr(STATE, "expira_em", None)
     ativa = STATE.is_active() if hasattr(STATE, "is_active") else STATE.qr_ativo()
     qtd_presentes = len(getattr(STATE, "presentes", set()))
+    base_url = str(request.base_url).rstrip("/")
 
     return request.app.state.templates.TemplateResponse(
         "projecao.html",
@@ -153,9 +154,9 @@ def projecao(request: Request):
             "token": token,
             "expira_em": expira_em,
             "qtd_presentes": qtd_presentes,
+            "base_url": base_url,
         },
     )
-
 
 @router.get("/qr.png")
 def qr_png():

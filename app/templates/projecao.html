@@ -55,7 +55,8 @@
   const standby = document.getElementById("standby");
   const btnRenovar = document.getElementById("btn-renovar");
   const img = document.getElementById("qr");
-  const BASE_URL = "{{ request.base_url.rstrip('/') }}";
+  const BASE_URL = "{{ base_url }}";
+
 
   let lastExpireMs = null;
 
