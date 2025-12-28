@@ -28,7 +28,7 @@
   <!-- MODO STANDBY vs QR -->
 <div class="qrwrap" id="qrwrap" {% if not token %}style="display:none;"{% endif %}>
   <img id="qr"
-       src="{{ request.base_url.rstrip('/') }}/prof/qr.png{% if prof_k %}?k={{ prof_k }}{% endif %}"
+       src="/prof/qr.png{% if prof_k %}?k={{ prof_k }}{% endif %}"
        alt="QR Code">
 </div>
 

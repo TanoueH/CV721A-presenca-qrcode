@@ -91,31 +91,15 @@ def roteiro(request: Request):
 
 @router.post("/aula/iniciar")
 def iniciar_aula():
-    # Inicia e já cria um token (estado consistente)
-    if hasattr(STATE, "start"):
-        STATE.start()
-    else:
-        # compatibilidade com métodos antigos, se ainda existirem
-        STATE.iniciar()
-        if hasattr(STATE, "gerar_qr"):
-            STATE.gerar_qr()
-
-    return RedirectResponse(url="/prof/projecao", status_code=303)
-
+    STATE.iniciar_aula()  # ou STATE.start()
+    return RedirectResponse(url="/prof/", status_code=303)
 
 @router.post("/aula/gerar_qr")
 def gerar_qr():
-    # Força criação/renovação de token
-    if hasattr(STATE, "start"):
-        STATE.start()
-    elif hasattr(STATE, "gerar_qr"):
-        STATE.gerar_qr()
-    else:
-        # fallback mínimo
-        raise RuntimeError("AulaState não possui método start() nem gerar_qr().")
-
+    if not STATE.is_active():
+        STATE.iniciar_aula()
+    STATE.gerar_qr()
     return RedirectResponse(url="/prof/projecao", status_code=303)
-
 
 @router.post("/aula/renovar")
 def renovar():
@@ -193,6 +177,7 @@ def qr_png():
 def status():
     token = getattr(STATE, "token", None)
     expira_em = getattr(STATE, "expires_at", None) or getattr(STATE, "expira_em", None)
+    
     ativa = STATE.is_active() if hasattr(STATE, "is_active") else STATE.qr_ativo()
     qtd_presentes = len(getattr(STATE, "presentes", set()))
 
@@ -205,9 +190,12 @@ def status():
         "expira_em": expira_iso,
         "expira_epoch_ms": expira_epoch_ms,
         "qtd_presentes": qtd_presentes,
+        "segundos_restantes": STATE.remaining_seconds(),
+        "qr_publicado": bool(STATE.token),
+
     }
 
-
+    
 # =========================
 # CHECK-IN PÚBLICO (/checkin)
 # =========================
@@ -217,7 +205,7 @@ def checkin_form(request: Request, token: str):
     token_ativo = getattr(STATE, "token", None)
     ativa = STATE.is_active() if hasattr(STATE, "is_active") else STATE.qr_ativo()
 
-    if (not ativa) or token != token_ativo:
+    if not STATE.qr_valido(token):
         return HTMLResponse("<h3>QR inválido ou expirado.</h3>", status_code=401)
 
     # Aviso opcional (não essencial)
