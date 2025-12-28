@@ -18,16 +18,10 @@ import json
 
 DISCIPLINA = "Fundações (CV721A)"
 TURMA = "Engenharia Civil FEC – 2026"
-TTL_MIN = int(os.getenv("QR_TTL_MIN", "3"))
-
-# Se definido no Render, exige ?k=PROF_TOKEN nas rotas /prof
-PROF_TOKEN = os.getenv("PROF_TOKEN", "").strip()
-
 AULAS_DIR = Path("app/static/aulas")
 ROTEIRO_PATH = Path("app/static/roteiro.json")
 
 STATE = AulaState(ttl_minutes=15)
-
 
 # Router do professor (tudo em /prof/...)
 router = APIRouter(prefix="/prof", tags=["Professor"])
