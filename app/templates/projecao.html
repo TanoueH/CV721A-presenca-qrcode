@@ -28,7 +28,7 @@
   <!-- MODO STANDBY vs QR -->
 <div class="qrwrap" id="qrwrap" {% if not token %}style="display:none;"{% endif %}>
   <img id="qr"
-       src="{{ request.base_url }}prof/qr.png{% if prof_k %}?k={{ prof_k }}{% endif %}"
+       src="{{ request.base_url.rstrip('/') }}/prof/qr.png{% if prof_k %}?k={{ prof_k }}{% endif %}"
        alt="QR Code">
 </div>
 
@@ -41,7 +41,6 @@
     </p>
   </div>
 </div>
-
 
   <div class="footer">
     <span>Aluno: aponte a câmera e preencha RA + Nome.</span>
@@ -56,8 +55,7 @@
   const standby = document.getElementById("standby");
   const btnRenovar = document.getElementById("btn-renovar");
   const img = document.getElementById("qr");
-
-  const BASE_URL = "{{ request.base_url }}";
+  const BASE_URL = "{{ request.base_url.rstrip('/') }}";
 
   let lastExpireMs = null;
 
@@ -94,7 +92,6 @@
     if (standby) standby.style.display = on ? "block" : "none";
     if (qrWrap) qrWrap.style.display = on ? "none" : "block";
     if (btnRenovar) btnRenovar.disabled = on;
-
     if (on){
       document.getElementById("expira").textContent = "--:--:--";
       document.getElementById("restante").textContent = "--:--";
@@ -103,7 +100,7 @@
 
   async function tick(){
     try {
-      const r = await fetch(withKey("/prof/status"));
+      const r = await fetch(withKey("prof/status"));
       if (!r.ok) return;
 
       const st = await r.json();

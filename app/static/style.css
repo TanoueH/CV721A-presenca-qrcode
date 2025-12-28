@@ -25,6 +25,22 @@ main{
 h1{ margin: 6px 0 8px; font-size: 28px; }
 h2{ margin: 0 0 10px; font-size: 20px; }
 p, li{ font-size: 16px; line-height: 1.4; }
+
+/* Check-in (aluno) */
+form { margin-top: 12px; }
+
+input[type="text"], input[type="number"], input[type="tel"], input[type="email"]{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.18);
+  background: #fff;
+}
+
+button.btn{
+  width: 100%;
+}
+
 .muted{ color: var(--muted); }
 
 .card{
@@ -35,12 +51,7 @@ p, li{ font-size: 16px; line-height: 1.4; }
   margin: 14px 0;
 }
 
-.row{
-  display:flex;
-  flex-wrap:wrap;
-  gap: 10px;
-  margin-top: 10px;
-}
+.row > * { margin: 0 10px 10px 0; }
 
 .btn{
   display:inline-block;
@@ -64,6 +75,10 @@ p, li{ font-size: 16px; line-height: 1.4; }
 }
 
 button.btn{ cursor:pointer; }
+
+input, button {
+  font-size: 16px;
+}
 
 /* Projeção (tela cheia) */
 .projecao{
@@ -132,6 +147,7 @@ button.btn{ cursor:pointer; }
 .notice * {
   font-size: inherit;
 }
+
 
 /* =========================
    PROJEÇÃO (MODO TV)

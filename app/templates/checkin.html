@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Registro de Presença</title>
-  <link rel="stylesheet" href="{{ request.base_url }}static/style.css?v=2">
+  <link rel="stylesheet" href="/static/style.css?v=2">
 </head>
 <body>
   <main>
@@ -20,7 +20,7 @@
 
       <form method="post" action="{{ request.base_url }}checkin/{{ request.path_params.token }}">
             class="row"
-            style="flex-direction:column; gap:12px; margin-top:14px;">
+            style="display:flex; flex-direction:column; row-gap:12px; margin-top:14px;">
 
         <input name="ra"
                placeholder="RA"
