@@ -18,40 +18,40 @@
         </div>
       {% endif %}
 
-      <form method="post" action="{{ request.base_url }}checkin/{{ request.path_params.token }}">
-            class="row"
-            style="display:flex; flex-direction:column; row-gap:12px; margin-top:14px;">
+      <form method="post" action="">
+        <div class="row" style="display:flex; flex-direction:column; row-gap:12px; margin-top:14px;">
 
-        <input name="ra"
-               placeholder="RA"
-               required
-               inputmode="numeric"
-               pattern="[0-9]{5,15}"
-               autocomplete="off"
-               autocorrect="off"
-               autocapitalize="off"
-               style="font-size:16px; padding:12px; width:100%; max-width:420px;">
+          <input name="ra"
+                 placeholder="RA"
+                 required
+                 inputmode="numeric"
+                 pattern="[0-9]{5,15}"
+                 autocomplete="off"
+                 autocorrect="off"
+                 autocapitalize="off"
+                 style="font-size:16px; padding:12px; width:100%; max-width:420px;">
 
-        <input name="nome"
-               placeholder="Nome completo"
-               required
-               autocomplete="name"
-               autocapitalize="words"
-               spellcheck="false"
-               style="font-size:16px; padding:12px; width:100%; max-width:420px;">
+          <input name="nome"
+                 placeholder="Nome completo"
+                 required
+                 autocomplete="name"
+                 autocapitalize="words"
+                 spellcheck="false"
+                 style="font-size:16px; padding:12px; width:100%; max-width:420px;">
 
-        <button type="submit"
-                class="btn primary"
-                style="max-width:420px;">
-          Confirmar presença
-        </button>
+          <button type="submit"
+                  class="btn primary"
+                  style="max-width:420px;">
+            Confirmar presença
+          </button>
 
+        </div>
       </form>
 
       <footer class="footer">
         <small>
-          SIGA · FEC / UNICAMP<br>
-          Sistema Institucional de Gestão de Aula
+          SIGA · Sistema Institucional de Gestão de Aula
+                      FEC / UNICAMP<br>
         </small>
       </footer>
 
