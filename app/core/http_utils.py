@@ -6,10 +6,8 @@ BASE_URL = os.getenv("BASE_URL", "").rstrip("/")
 def resolve_base_url(request: Request) -> str:
     if BASE_URL:
         return BASE_URL
-    scheme = request.headers.get("x-forwarded-proto", "http")
-    host = request.headers.get("host") or "localhost"
-    return f"{scheme}://{host}".rstrip("/")
-
+    scheme = request.headers.get("x-forwarded-proto", "https")
+     
 def warn_if_localhost(request: Request) -> str:
     host = (request.headers.get("host") or "").lower()
     if host.startswith("localhost") or host.startswith("127.0.0.1"):

@@ -1,4 +1,3 @@
-import os
 import secrets
 from datetime import datetime, timedelta
 from typing import Optional, Set
@@ -6,13 +5,14 @@ from typing import Optional, Set
 from fastapi import APIRouter, Request, HTTPException, Form
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
 
-from app.services.qr import gerar_qr_png, build_checkin_url
+from app.core.public_urls import checkin_url
+from app.services.qrcode_service import QRCodeService
+
 from app.services.sheets import registrar_presenca
-
-from starlette.datastructures import URL
-
 from pathlib import Path
 from urllib.parse import quote
+
+from app.domain.aula_state import AulaState #Novo
 
 import json
 
@@ -26,6 +26,8 @@ PROF_TOKEN = os.getenv("PROF_TOKEN", "").strip()
 AULAS_DIR = Path("app/static/aulas")
 ROTEIRO_PATH = Path("app/static/roteiro.json")
 
+STATE = AulaState(ttl_minutes=15)
+
 
 # Router do professor (tudo em /prof/...)
 router = APIRouter(prefix="/prof", tags=["Professor"])
@@ -33,41 +35,8 @@ router = APIRouter(prefix="/prof", tags=["Professor"])
 # Router público (check-in do aluno)
 public_router = APIRouter(tags=["Check-in"])
 
-class AulaState:
-    def __init__(self):
-        self.aula_iniciada: bool = False
-        self.token: Optional[str] = None
-        self.expira_em: Optional[datetime] = None
-        self.presentes: Set[str] = set()
+qr_service = QRCodeService()
 
-    def iniciar(self):
-        # Inicia a aula SEM gerar QR
-        self.aula_iniciada = True
-        self.token = None
-        self.expira_em = None
-        self.presentes = set()
-
-    def gerar_qr(self):
-        # Gera QR (final da aula)
-        if not self.aula_iniciada:
-            self.aula_iniciada = True  # opcional: permitir gerar mesmo sem "iniciar"
-        self.token = secrets.token_urlsafe(16)
-        self.expira_em = datetime.now() + timedelta(minutes=TTL_MIN)
-
-    def renovar_qr(self):
-        self.gerar_qr()
-
-    def encerrar(self):
-        # Encerra aula e limpa tudo
-        self.aula_iniciada = False
-        self.token = None
-        self.expira_em = None
-        self.presentes = set()
-
-    def qr_ativo(self) -> bool:
-        return bool(self.token and self.expira_em and datetime.now() <= self.expira_em)
-
-STATE = AulaState()
 
 def _check_prof_key(request: Request) -> None:
     """
@@ -81,19 +50,6 @@ def _check_prof_key(request: Request) -> None:
         # Mantive simples; se preferir, trocamos por uma página HTML.
         raise HTTPException(status_code=403, detail="Acesso restrito (chave inválida).")
 
-def base_url(request: Request) -> str:
-    """
-    Render: usa BASE_URL se existir; local: deriva da URL/headers preservando porta.
-    """
-    BASE_URL = os.getenv("BASE_URL", "").rstrip("/")
-    if BASE_URL:
-        return BASE_URL
-
-    # Preferir a URL já parseada (inclui host:porta) e respeitar proxy quando existir
-    url = URL(str(request.url))
-    scheme = request.headers.get("x-forwarded-proto", url.scheme)
-    host = request.headers.get("x-forwarded-host", request.headers.get("host", url.netloc))
-    return f"{scheme}://{host}".rstrip("/")
 
 # =========================
 # PROFESSOR (/prof)
@@ -218,10 +174,8 @@ def qr_png(request: Request):
          status_code=204
     )
 
-    url_checkin = build_checkin_url(STATE.token)
-    print("CHECKIN_URL =", url_checkin)
-
-    png = gerar_qr_png(url_checkin)
+    url_checkin = checkin_url(STATE.token)
+    png = qr_service.png_for_url(url_checkin)
 
     resp = Response(content=png, media_type="image/png")
     resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
