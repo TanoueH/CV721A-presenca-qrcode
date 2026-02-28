@@ -2,15 +2,15 @@
   "titulo": "Roteiro de Aulas — CV721A",
   "itens": [
     {
-      "aula": "Aula 01",
+      "aula": "Aula 00",
       "tema": "Introdução",
-      "arquivo": "aula_0_Introdução_CV721-2024_sem1.pdf",
+      "arquivo": "aula_0_Introdução_CV721-2026_sem1.pptx",
       "kahoot_url": ""
     },
     {
-      "aula": "Aula 02",
-      "tema": "NBR 6122 — Conceitos",
-      "arquivo": "aula_2_Definições e Conceitos da NBR6122_Cap.4_CV721.pdf",
+      "aula": "Aula 01",
+      "tema": "Introdução",
+      "arquivo": "aula_1_Introdução_Área Fund.Interação_Solo_Fundação_Cap. 1_2_3_CV721-2026_sem1.pptx",
       "kahoot_url": ""
     }
   ]
