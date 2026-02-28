@@ -12,7 +12,7 @@ from app.routes.notas import router as notas_router
 from app.routes.kahoot import router as kahoot_router
 from app.routes.chamada import router as chamada_router
 
-app = FastAPI(title="SIGA - Sistema Integrado de Gestão Acadêmica", version="1.0.1")
+app = FastAPI(title="SAT - Sistema de Apoio ao Trabalho Docente", version="1.0.2")
 
 # Templates e arquivos estáticos
 app.state.templates = Jinja2Templates(directory="app/templates")
