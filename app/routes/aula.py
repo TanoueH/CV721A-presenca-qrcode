@@ -1,8 +1,6 @@
 import os
 
-from app.core.public_base 
-
-import get_public_base_url
+from app.core.public_base import get_public_base_url
 
 from __future__ import annotations
 
