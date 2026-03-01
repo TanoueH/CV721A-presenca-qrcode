@@ -15,3 +15,7 @@ __pycache__/
 
 # local env secrets
 .env
+
+fundacoes-engenharia/
+app/routes/RASCUNHOS/
+docs/Apresentação/

@@ -49,24 +49,28 @@
 
 <script>
 (function () {
-  const profK = "{{ prof_k }}".trim();
+  const profK = ("{{ prof_k|default('') }}").trim();
   const msgEl = document.getElementById("msg");
   const qrWrap = document.getElementById("qrwrap");
   const standby = document.getElementById("standby");
   const btnRenovar = document.getElementById("btn-renovar");
   const img = document.getElementById("qr");
-  const BASE_URL = "{{ base_url }}";
+  const BASE_URL = ("{{ base_url|default('') }}").trim() || window.location.origin;
 
 
   let lastExpireMs = null;
 
   function withKey(path){
-    let url = BASE_URL + path;
-    if (profK) {
-      url += (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(profK);
-    }
-    return url;
+  const cleanBase = BASE_URL.replace(/\/+$/, ""); // remove barra final se houver
+  const cleanPath = path.startsWith("/") ? path : "/" + path;
+  let url = cleanBase + cleanPath;
+
+  if (profK) {
+    url += (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(profK);
   }
+
+  return url;
+}
 
   function setMsg(text){
     if (!msgEl) return;
@@ -101,7 +105,7 @@
 
   async function tick(){
     try {
-      const r = await fetch(withKey("prof/status"));
+      const r = await fetch(withKey("/prof/status"), { cache: "no-store" });
       if (!r.ok) return;
 
       const st = await r.json();
