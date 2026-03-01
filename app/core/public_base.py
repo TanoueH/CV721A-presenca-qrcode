@@ -5,6 +5,6 @@ def get_public_base_url() -> str:
     if not base:
         raise RuntimeError(
             "BASE_URL não definido. "
-            "Defina a URL pública do sistema (ex.: https://cv721a-presenca-qrcode.onrender.com)"
-        )
+            "Defina a URL pública do sistema (ex.: https://seu-servico.onrender.com)"
+)
     return base.rstrip("/")

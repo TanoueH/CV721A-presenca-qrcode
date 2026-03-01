@@ -117,15 +117,17 @@
 {% if token %}
 <script>
 (function () {
-  const profK = "{{ prof_k }}".trim();
+  const profK = ("{{ prof_k|default('') }}").trim();
   const qtdSpan = document.getElementById("qtd_presentes");
   const msgEl = document.getElementById("msg");
   const lnkQr = document.getElementById("lnk_qr");
 
-  function withKey(path) {
-    const base = "{{ request.base_url }}".replace(/\/$/, "");
-    const clean = path.startsWith("/") ? path.slice(1) : path;
-    let url = base + "/" + clean;
+  const BASE_URL = ("{{ base_url|default('') }}").trim() || window.location.origin;
+
+  function withKey(path){
+    const cleanBase = BASE_URL.replace(/\/+$/, "");
+    const cleanPath = path.startsWith("/") ? path : "/" + path;
+    let url = cleanBase + cleanPath;
 
     if (profK) {
       url += (url.includes("?") ? "&" : "?") + "k=" + encodeURIComponent(profK);

@@ -105,8 +105,18 @@
 
   async function tick(){
     try {
-      const r = await fetch(withKey("/prof/status"), { cache: "no-store" });
-      if (!r.ok) return;
+    const r = await fetch(withKey("/prof/status"), { cache: "no-store" });
+
+    if (r.status === 401 || r.status === 403){
+  setMsg("Acesso restrito (chave inválida).", "error");
+  return;
+  }
+    if (!r.ok){
+      const txt = await r.text().catch(()=> "");
+     console.error("Status falhou:", r.status, txt);
+     setMsg("Falha ao consultar status.", "warn");
+     return;
+  }
 
       const st = await r.json();
       document.getElementById("presentes").textContent = st.qtd_presentes ?? 0;

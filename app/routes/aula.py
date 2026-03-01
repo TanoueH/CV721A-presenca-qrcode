@@ -1,3 +1,6 @@
+import osfrom app.core.public_base 
+import get_public_base_url
+
 from __future__ import annotations
 
 import json
@@ -15,14 +18,14 @@ from app.services.sheets import registrar_presenca
 
 logger = logging.getLogger("uvicorn.error")
 
-DISCIPLINA = "Fundações (CV721A)"
-TURMA = "Engenharia Civil FEC – 2026"
+DISCIPLINA = os.getenv("DISCIPLINA", "Fundações (CV721A)")
+TURMA = os.getenv("TURMA", "Engenharia Civil FEC – 2026")
 
-AULAS_DIR = Path("app/static/aulas")
-ROTEIRO_PATH = Path("app/static/roteiro.json")
+TTL_MIN = int(os.getenv("QR_TTL_MIN", "05"))
+STATE = AulaState(ttl_minutes=TTL_MIN)
 
-# Estado de aula (TTL por enquanto fixo; depois volta a vir de settings/env)
-STATE = AulaState(ttl_minutes=15)
+AULAS_DIR = Path(os.getenv("AULAS_DIR", "app/static/aulas"))
+ROTEIRO_PATH = Path(os.getenv("ROTEIRO_PATH", "app/static/roteiro.json"))
 
 # Serviço de QR (único)
 qr_service = QRCodeService()
@@ -142,7 +145,7 @@ def projecao(request: Request):
     expira_em = getattr(STATE, "expires_at", None) or getattr(STATE, "expira_em", None)
     ativa = STATE.is_active() if hasattr(STATE, "is_active") else STATE.qr_ativo()
     qtd_presentes = len(getattr(STATE, "presentes", set()))
-    base_url = str(request.base_url).rstrip("/")
+    base_url = get_public_base_url()
 
     return request.app.state.templates.TemplateResponse(
         "projecao.html",
@@ -186,13 +189,13 @@ def status():
     expira_epoch_ms = int(expira_em.timestamp() * 1000) if expira_em else None
 
     return {
-        "token_ativo": bool(token),
-        "ativa": ativa,
+        "token_ativo": bool(token) and bool(ativa),
+        "ativa": bool(ativa),
         "expira_em": expira_iso,
         "expira_epoch_ms": expira_epoch_ms,
         "qtd_presentes": qtd_presentes,
         "segundos_restantes": STATE.remaining_seconds(),
-        "qr_publicado": bool(STATE.token),
+        "qr_publicado": bool(STATE.token) and bool(ativa),
 
     }
 
