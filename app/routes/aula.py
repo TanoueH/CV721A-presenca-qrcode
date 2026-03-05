@@ -21,7 +21,7 @@ logger = logging.getLogger("uvicorn.error")
 DISCIPLINA = os.getenv("DISCIPLINA", "Fundações (CV721A)")
 TURMA = os.getenv("TURMA", "Engenharia Civil FEC – 2026")
 
-TTL_MIN = int(os.getenv("QR_TTL_MIN", "05"))
+TTL_MIN = int(os.getenv("QR_TTL_MIN", "15"))
 STATE = AulaState(ttl_minutes=TTL_MIN)
 
 AULAS_DIR = Path(os.getenv("AULAS_DIR", "app/static/aulas"))
