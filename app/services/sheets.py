@@ -37,6 +37,9 @@ def get_spreadsheet():
         raise RuntimeError("Env SPREADSHEET_ID não definida.")
     return get_gspread_client().open_by_key(sid)
 
+def get_ws(title: str):
+    return get_spreadsheet().worksheet(title)
+
 def ensure_ws(title: str, headers: list[str]):
     sh = get_spreadsheet()
     try:
